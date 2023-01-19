@@ -10,5 +10,8 @@ References
 
 5. A Machine Learning Guide to HTM:
    https://numenta.com/blog/2019/10/24/machine-learning-guide-to-htm
+6. International Conference on Knowledge Based and Intelligent Information and Engineering Systems
+   Enhancement of Classifiers in HTM-CLA Using Similarity Evaluation Methods
+   Jahan Balasubramaniama, Gokul Krishnaa.C.Ba, Fangming Zhua
    
 
