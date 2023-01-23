@@ -22,11 +22,14 @@ namespace HtmClassifierUnitTest
     [TestClass]
     public class HtmClassifierTest
     {
+        public TestContext TestContext { get; set; }
+
 
         private int numColumns = 1024;
         private int cellsPerColumn = 25;
         private HtmClassifier<string, ComputeCycle> htmClassifier;
         private Dictionary<string, List<double>> sequences;
+        private string fileName;
 
         [TestInitialize]
         public void Setup()
@@ -37,6 +40,9 @@ namespace HtmClassifierUnitTest
             sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             LearnHtmClassifier();
+
+            fileName = $"{TestContext.TestName}.txt";
+            HtmSerializer.Reset();
         }
 
         /// <summary>
@@ -57,12 +63,36 @@ namespace HtmClassifierUnitTest
 
             var res = htmClassifier.GetPredictedInputValues(predictiveCells.ToArray(), 3);
 
+            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                HtmSerializer.Serialize(cls, null, sw);
+            }
+
             var tokens = res.First().PredictedInput.Split('_');
             var tokens2 = res.First().PredictedInput.Split('-');
             Debug.WriteLine($"->{tokens2[tokens.Length - 1]}");
             var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
             Assert.IsTrue(predictValue > 0);
         }
+
+        //[TestMethod]
+        //public void SerializationHtmClassifierTest()
+        //{
+
+        //    htmClassifier = new HtmClassifier<string, ComputeCycle>();
+
+        //    sequences = new Dictionary<string, List<double>>();
+        //    sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+
+        //    HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+        //    using (StreamWriter sw = new StreamWriter(fileName))
+        //    {
+        //        HtmSerializer.Serialize(cls, null, sw);
+        //    }
+
+        //}
+
 
         /// <summary>
         ///Here we are checking if cells count is zero
