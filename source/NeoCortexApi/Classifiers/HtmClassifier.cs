@@ -507,8 +507,12 @@ namespace NeoCortexApi.Classifiers
             HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
+            ser.SerializeValue(this.maxRecordedElements, sw);
+            ser.SerializeValue(this.inputSequence.Cast<double>().ToList(), sw);
+            ser.SerializeValue(this.m_AllInputs.Cast<double>().ToList(), sw);
+            ser.SerializeValue(this.maxRecordedElements, sw);
+            ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
 
-            throw new NotImplementedException();
         }
         #endregion
 
