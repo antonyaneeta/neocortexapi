@@ -40,7 +40,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     /// <typeparam name="TIN"></typeparam>
     /// <typeparam name="TOUT"></typeparam>
-    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>,ISerializable
+    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>//,ISerializable
     {
         private int maxRecordedElements = 10;
 
@@ -503,12 +503,20 @@ namespace NeoCortexApi.Classifiers
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             //TODO
-
             HtmSerializer ser = new HtmSerializer();
 
             ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
+            ser.SerializeValue(maxRecordedElements, sw);
+            if (typeof(double) == typeof(TIN))
+            {
+                ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
+            }
+            else if (typeof(string) == typeof(TIN))
+            {
+                ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
+            }
 
-            throw new NotImplementedException();
+            ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
         }
         #endregion
 
