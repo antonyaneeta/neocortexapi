@@ -45,6 +45,26 @@ namespace HtmClassifierUnitTest
             HtmSerializer.Reset();
         }
 
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierSerialization()
+        {
+
+            htmClassifier = new HtmClassifier<string, ComputeCycle>();
+
+            sequences = new Dictionary<string, List<double>>();
+            sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+
+            //LearnHtmClassifier();
+
+
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+
+        }
+
         /// <summary>
         /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
         /// and check from this sequence each input, will we get prediction or not.
