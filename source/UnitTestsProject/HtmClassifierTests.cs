@@ -43,6 +43,7 @@ namespace HtmClassifierUnitTest
 
             fileName = $"{TestContext.TestName}.txt";
             HtmSerializer.Reset();
+
         }
 
         [TestMethod]
@@ -62,6 +63,7 @@ namespace HtmClassifierUnitTest
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
+
 
         }
 
