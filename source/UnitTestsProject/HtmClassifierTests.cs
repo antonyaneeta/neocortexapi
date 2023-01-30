@@ -43,6 +43,28 @@ namespace HtmClassifierUnitTest
 
             fileName = $"{TestContext.TestName}.txt";
             HtmSerializer.Reset();
+
+        }
+
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierSerialization()
+        {
+
+            htmClassifier = new HtmClassifier<string, ComputeCycle>();
+
+            sequences = new Dictionary<string, List<double>>();
+            sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+
+            //LearnHtmClassifier();
+
+
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+
+
         }
 
         /// <summary>
