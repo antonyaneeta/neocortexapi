@@ -1882,10 +1882,24 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public void SerializeValue(List<int> value, StreamWriter sw)
         {
+            SerializeValue<int>(value, sw);
+        }
+
+        public void SerializeValue(List<double> value, StreamWriter sw)
+        {
+            SerializeValue<double>(value, sw);
+        }
+        public void SerializeValue(List<string> value, StreamWriter sw)
+        {
+            SerializeValue<string>(value, sw);
+        }
+
+        private void SerializeValue<TIN>(List<TIN> value, StreamWriter sw)
+        {
             sw.Write(ValueDelimiter);
             if (value != null)
             {
-                foreach (int val in value)
+                foreach (TIN val in value)
                 {
                     sw.Write(val.ToString());
                     sw.Write(ElementsDelimiter);
@@ -1893,6 +1907,7 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
+
         /// <summary>
         /// Read the List of Integers.
         /// </summary>
@@ -2102,6 +2117,7 @@ namespace NeoCortexApi.Entities
 
             return true;
         }
+
 
     }
 
