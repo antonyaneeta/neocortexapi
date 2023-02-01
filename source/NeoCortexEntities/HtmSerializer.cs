@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -1905,6 +1906,21 @@ namespace NeoCortexApi.Entities
                     sw.Write(ElementsDelimiter);
                 }
             }
+            sw.Write(ParameterDelimiter);
+        }
+
+        public void SerializeValue<TIN>(Dictionary<TIN, List<int[]> > value, StreamWriter sw)
+        {
+            sw.Write(ValueDelimiter);
+            if (value != null)
+            {
+                foreach (var val in value)
+                {
+                    
+                    sw.Write(val.Key.ToString());
+                }
+            }
+
             sw.Write(ParameterDelimiter);
         }
 
