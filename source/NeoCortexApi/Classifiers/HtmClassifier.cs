@@ -505,22 +505,21 @@ namespace NeoCortexApi.Classifiers
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             //TODO
-
             HtmSerializer ser = new HtmSerializer();
-
             ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
             ser.SerializeValue(maxRecordedElements, sw);
-            if (typeof(double) == typeof(TIN))
-            {
-                ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
-            }
-            else if (typeof(string) == typeof(TIN))
-            {
-                ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
-            }
+            //if (typeof(double) == typeof(TIN))
+            //{
+            //    ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
+            //}
+            //else if (typeof(string) == typeof(TIN))
+            //{
+            //    ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
+            //}
 
+            // ser.SerializeValue(inputSequence, sw);
+            ser.SerializeValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
-
         }
         #endregion
 
