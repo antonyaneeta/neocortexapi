@@ -44,7 +44,7 @@ namespace NeoCortexApi.Classifiers
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>//,ISerializable
 
     {
-        public int maxRecordedElements = 10;
+        private int maxRecordedElements = 10;
 
         private List<TIN> inputSequence = new List<TIN>();
 
@@ -53,7 +53,7 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Recording of all SDRs. See maxRecordedElements.
         /// </summary>
-        public Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
+        private Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
 
         /// <summary>
         /// Mapping between the input key and the SDR assootiated to the input.
