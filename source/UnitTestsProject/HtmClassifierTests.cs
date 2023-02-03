@@ -37,7 +37,8 @@ namespace HtmClassifierUnitTest
             htmClassifier = new HtmClassifier<string, ComputeCycle>();
 
             sequences = new Dictionary<string, List<double>>();
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
 
             LearnHtmClassifier();
 
@@ -51,10 +52,11 @@ namespace HtmClassifierUnitTest
         public void TestHtmClassifierSerialization()
         {
 
-            htmClassifier = new HtmClassifier<string, ComputeCycle>();
+            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
 
-            sequences = new Dictionary<string, List<double>>();
-            sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            //sequences = new Dictionary<string, List<double>>();
+            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            //sequences.Add("S2", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             //LearnHtmClassifier();
 
@@ -63,7 +65,6 @@ namespace HtmClassifierUnitTest
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
-
 
         }
 
