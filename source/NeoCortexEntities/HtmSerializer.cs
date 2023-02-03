@@ -1750,6 +1750,7 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
+
         /// <summary>
         /// Read the dictionary with key:int and value:int.
         /// </summary>
@@ -1812,6 +1813,7 @@ namespace NeoCortexApi.Entities
             }
             return keyValues;
         }
+
 
         /// <summary>
         /// Serialize the List of DistalDendrite.
@@ -1909,19 +1911,29 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-        public void SerializeValue<TIN>(Dictionary<TIN, List<int[]> > value, StreamWriter sw)
+public void SerializeValue<TIN>(Dictionary<TIN, List<int[]> > value, StreamWriter sw)
         {
+            sw.WriteLine();
             sw.Write(ValueDelimiter);
             if (value != null)
             {
                 foreach (var val in value)
                 {
-                    
-                    sw.Write(val.Key.ToString());
+                    sw.Write(val.Key.ToString() + KeyValueDelimiter);
+                    for(int i = 0; i < val.Value.Count; i++)
+                    {
+                        SerializeValue(val.Value[i],sw);
+                        //sw.Write(ElementsDelimiter);
+                    }
+                    sw.WriteLine();
+
+                    //sw.Write(val.Key.ToString());
                 }
+                //sw.Write(ParameterDelimiter);
             }
 
-            sw.Write(ParameterDelimiter);
+            
+
         }
 
         /// <summary>
