@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NeoCortexApi.Entities;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -2103,6 +2104,19 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
+        
+
+        //Trying to understand serialize method to be applied to HTM classifier
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            //TODO
+            HtmSerializer ser = new HtmSerializer();
+            //ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
+            ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
+            // throw new NotImplementedException();
+        }
+
     }
 
 }
+
