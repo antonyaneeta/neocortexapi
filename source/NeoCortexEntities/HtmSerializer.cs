@@ -1883,10 +1883,24 @@ namespace NeoCortexApi.Entities
         /// </summary>
         public void SerializeValue(List<int> value, StreamWriter sw)
         {
+            SerializeValue<int>(value, sw);
+        }
+
+        public void SerializeValue(List<double> value, StreamWriter sw)
+        {
+            SerializeValue<double>(value, sw);
+        }
+        public void SerializeValue(List<string> value, StreamWriter sw)
+        {
+            SerializeValue<string>(value, sw);
+        }
+
+        private void SerializeValue<TIN>(List<TIN> value, StreamWriter sw)
+        {
             sw.Write(ValueDelimiter);
             if (value != null)
             {
-                foreach (int val in value)
+                foreach (TIN val in value)
                 {
                     sw.Write(val.ToString());
                     sw.Write(ElementsDelimiter);
@@ -1894,6 +1908,7 @@ namespace NeoCortexApi.Entities
             }
             sw.Write(ParameterDelimiter);
         }
+
         /// <summary>
         /// Read the List of Integers.
         /// </summary>
@@ -2102,18 +2117,6 @@ namespace NeoCortexApi.Entities
             }
 
             return true;
-        }
-
-        
-
-        //Trying to understand serialize method to be applied to HTM classifier
-        public void Serialize(object obj, string name, StreamWriter sw)
-        {
-            //TODO
-            HtmSerializer ser = new HtmSerializer();
-            //ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
-            ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
-            // throw new NotImplementedException();
         }
 
     }

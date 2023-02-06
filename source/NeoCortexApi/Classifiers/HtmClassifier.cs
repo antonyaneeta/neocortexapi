@@ -1,5 +1,6 @@
 ﻿// Copyright (c) Damir Dobric. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
 using System;
@@ -39,7 +40,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     /// <typeparam name="TIN"></typeparam>
     /// <typeparam name="TOUT"></typeparam>
-    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>
+    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>//,ISerializable
     {
         private int maxRecordedElements = 10;
 
@@ -491,6 +492,57 @@ namespace NeoCortexApi.Classifiers
             return same.Count();
         }
 
+        #region Serialization
+        /// <summary>
+        /// Implement Serialization for HtmClassifer
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="name"></param>
+        /// <param name="sw"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void Serialize(object obj, string name, StreamWriter sw)
+        {
+            //TODO
+
+            HtmSerializer ser = new HtmSerializer();
+
+            ser.SerializeBegin(nameof(HtmClassifier<TIN,TOUT>), sw);
+            ser.SerializeValue(maxRecordedElements, sw);
+            if (typeof(double) == typeof(TIN))
+            {
+                ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
+            }
+            else if (typeof(string) == typeof(TIN))
+            {
+                ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
+            }
+
+            ser.SerializeEnd(nameof(HtmClassifier<TIN,TOUT>), sw);
+
+        }
+        #endregion
+
+        #region For reference
+
+        //public void Serialize(object obj, string name, StreamWriter sw)
+        //{
+        //    var excludeMembers = new List<string>
+        //    {
+        //        nameof(EncoderBase.Properties),
+        //        nameof(EncoderBase.halfWidth),
+        //        nameof(EncoderBase.rangeInternal),
+        //        nameof(EncoderBase.nInternal),
+        //        nameof(EncoderBase.encLearningEnabled),
+        //        nameof(EncoderBase.flattenedFieldTypeList),
+        //        nameof(EncoderBase.decoderFieldTypes),
+        //        nameof(EncoderBase.topDownValues),
+        //        nameof(EncoderBase.bucketValues),
+        //        nameof(EncoderBase.topDownMapping),
+
+        //    };
+        //    HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
+        //}
+        #endregion
 
     }
 }
