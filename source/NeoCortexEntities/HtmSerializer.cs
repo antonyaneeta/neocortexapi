@@ -1895,17 +1895,19 @@ namespace NeoCortexApi.Entities
             SerializeValue<string>(value, sw);
         }
 
-        private void SerializeValue<TIN>(List<TIN> value, StreamWriter sw)
+        private void SerializeValue<T>(List<T> value, StreamWriter sw)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void SerializeValue<TIN>(TIN value, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
             if (value != null)
-            {
-                foreach (TIN val in value)
-                {
-                    sw.Write(val.ToString());
-                    sw.Write(ElementsDelimiter);
-                }
+            {               
+                    sw.Write(value.ToString());
             }
+
             sw.Write(ParameterDelimiter);
         }
 
@@ -2119,6 +2121,10 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
+        public void SerializeValue<TIN>(Dictionary<TIN, List<int[]>> m_AllInputs, StreamWriter sw)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
