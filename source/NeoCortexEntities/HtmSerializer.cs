@@ -1911,7 +1911,45 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-public void SerializeValue<TIN>(Dictionary<TIN, List<int[]> > value, StreamWriter sw)
+
+        public Dictionary<TIN, List<int[]>> ReadDictSIarray1<TIN>(String reader)
+        {
+            string[] str = reader.Split(ElementsDelimiter);
+            Dictionary<TIN, List<int[]>> keyValues = new Dictionary<TIN, List<int[]>>();
+            for (int i = 0; i < str.Length - 1; i++)
+            {
+                var tokens = (str[i].Split(KeyValueDelimiter));
+        ;
+                string[] values = tokens[1].Split(ValueDelimiter);
+                int[] arrayValues = new int[values.Length - 1];
+                List<int[]> li = new List<int[]>();
+                for (int j = 0; j < values.Length - 1; j++)
+                {
+                    arrayValues[j] = Convert.ToInt32(values[j].Trim());
+                    
+
+                }
+                li.Add(arrayValues);
+                string value = tokens[0].Trim();
+                TIN tIN = (TIN)(object)value.ToString();
+                keyValues.Add(tIN, li);
+            }
+            return keyValues;
+        }
+
+        //public Dictionary<String, int[]> RReadDictionaryIIValue(string reader)
+        //{
+        //    string[] str = reader.Split(ElementsDelimiter);
+        //    Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>();
+        //    for (int i = 0; i < str.Length - 1; i++)
+        //    {
+        //        string[] tokens = str[i].Split(KeyValueDelimiter);
+        //        keyValues.Add(key:Convert.ToString(tokens[0].Trim()), value: ReadArrayInt(tokens[1]));
+        //    }
+        //    return keyValues;
+        //}
+
+        public void SerializeValue1<TIN>(Dictionary<TIN, List<int[]>> value, StreamWriter sw)
         {
             sw.WriteLine();
             sw.Write(ValueDelimiter);
@@ -1920,9 +1958,9 @@ public void SerializeValue<TIN>(Dictionary<TIN, List<int[]> > value, StreamWrite
                 foreach (var val in value)
                 {
                     sw.Write(val.Key.ToString() + KeyValueDelimiter);
-                    for(int i = 0; i < val.Value.Count; i++)
+                    for (int i = 0; i < val.Value.Count; i++)
                     {
-                        SerializeValue(val.Value[i],sw);
+                        SerializeValue(val.Value[i], sw);
                         //sw.Write(ElementsDelimiter);
                     }
                     sw.WriteLine();
@@ -1932,9 +1970,12 @@ public void SerializeValue<TIN>(Dictionary<TIN, List<int[]> > value, StreamWrite
                 //sw.Write(ParameterDelimiter);
             }
 
-            
-
         }
+    
+
+
+
+
 
         /// <summary>
         /// Read the List of Integers.

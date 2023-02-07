@@ -518,15 +518,84 @@ namespace NeoCortexApi.Classifiers
             //{
             //    ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
             //}
-
-
             // ser.SerializeValue(inputSequence, sw);
-            ser.SerializeValue(m_AllInputs, sw);
+
+
+            ser.SerializeValue1(m_AllInputs, sw);
 
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
 
         }
+
         #endregion
+
+        #region Deserialize
+        public static HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
+        {
+            //throw new NotImplementedException();
+            HtmSerializer ser = new HtmSerializer();
+            HtmClassifier<TIN, TOUT> cls = new HtmClassifier<TIN, TOUT>();
+            Dictionary<TIN, int[]> keyValues = new Dictionary<TIN, int[]>();
+
+            while (sr.Peek() >= 0)
+            {
+                string data = sr.ReadLine();
+                if (data == String.Empty || data == ser.ReadBegin(nameof(cls)))
+                {
+                    continue;
+                }
+                else if (data == ser.ReadEnd(nameof(cls)))
+                {
+                    break;
+                }
+                else
+                {
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                {
+                                    cls.maxRecordedElements = ser.ReadIntValue(str[i]);
+                                    break;
+                                }
+                            case 1:
+                                {
+                                    string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
+                                    for (int j = 0; i < str.Length; i++)
+                                    {
+                                        switch (i)
+                                        {
+                                            case 0:
+                                                cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+
+                                    //cls.m_AllInputs = ser.ReadKeyISValue(str[i]);
+                                    break;
+                                }
+
+
+                        }
+                    }
+                    //return cls;
+
+
+                }
+            }
+
+            return cls;
+        }
+
+
+        #endregion
+
+
+
 
         #region For refernce
 
@@ -551,3 +620,4 @@ namespace NeoCortexApi.Classifiers
         #endregion
     }
 }
+
