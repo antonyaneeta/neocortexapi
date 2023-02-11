@@ -1914,13 +1914,13 @@ namespace NeoCortexApi.Entities
 
         public Dictionary<TIN, List<int[]>> ReadDictSIarray1<TIN>(String reader)
         {
-            string[] str = reader.Split(ElementsDelimiter);
+            string[] str = reader.Split(ParameterDelimiter);
             Dictionary<TIN, List<int[]>> keyValues = new Dictionary<TIN, List<int[]>>();
-            for (int i = 0; i < str.Length - 1; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 var tokens = (str[i].Split(KeyValueDelimiter));
         ;
-                string[] values = tokens[1].Split(ValueDelimiter);
+                string[] values = tokens[1].Split(ElementsDelimiter);
                 int[] arrayValues = new int[values.Length - 1];
                 List<int[]> li = new List<int[]>();
                 for (int j = 0; j < values.Length - 1; j++)

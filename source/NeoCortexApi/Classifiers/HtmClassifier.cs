@@ -41,7 +41,7 @@ namespace NeoCortexApi.Classifiers
     /// <typeparam name="TIN"></typeparam>
     /// <typeparam name="TOUT"></typeparam>
 
-    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>//,ISerializable
+    public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>,ISerializable
 
     {
         private int maxRecordedElements = 10;
@@ -530,7 +530,7 @@ namespace NeoCortexApi.Classifiers
         #endregion
 
         #region Deserialize
-        public static HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
+        public HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
         {
             //throw new NotImplementedException();
             HtmSerializer ser = new HtmSerializer();
@@ -540,13 +540,32 @@ namespace NeoCortexApi.Classifiers
             while (sr.Peek() >= 0)
             {
                 string data = sr.ReadLine();
-                if (data == String.Empty || data == ser.ReadBegin(nameof(cls)))
+                if (data == string.Empty || data == ser.ReadBegin(nameof(HtmClassifier<TIN, TOUT>)))
                 {
                     continue;
                 }
-                else if (data == ser.ReadEnd(nameof(cls)))
+                else if (data == ser.ReadEnd(nameof(HtmClassifier<TIN, TOUT>)))
                 {
                     break;
+                }
+                else if (data.Contains(HtmSerializer.KeyValueDelimiter))
+                {
+                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
+                    for (int i = 0; i < str.Length; i++)
+                    {
+                        string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
+                        for (int j = 0; i < str.Length-1; i++)
+                        {
+                            switch (j)
+                            {
+                                case 0:
+                                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -560,24 +579,24 @@ namespace NeoCortexApi.Classifiers
                                     cls.maxRecordedElements = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                            case 1:
-                                {
-                                    string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
-                                    for (int j = 0; i < str.Length; i++)
-                                    {
-                                        switch (i)
-                                        {
-                                            case 0:
-                                                cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
-                                                break;
-                                            default:
-                                                break;
-                                        }
-                                    }
+                            //case 1:
+                            //    {
+                            //        string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
+                            //        for (int j = 0; i < str.Length; i++)
+                            //        {
+                            //            switch (i)
+                            //            {
+                            //                case 0:
+                            //                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
+                            //                    break;
+                            //                default:
+                            //                    break;
+                            //            }
+                            //        }
 
-                                    //cls.m_AllInputs = ser.ReadKeyISValue(str[i]);
-                                    break;
-                                }
+                            //        //cls.m_AllInputs = ser.ReadKeyISValue(str[i]);
+                            //        break;
+                            //    }
 
 
                         }
