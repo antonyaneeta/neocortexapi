@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NeoCortexEntities.NeuroVisualizer;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace HtmClassifierUnitTest
 {
@@ -51,21 +52,28 @@ namespace HtmClassifierUnitTest
         public void TestHtmClassifierSerialization()
         {
 
-            htmClassifier = new HtmClassifier<string, ComputeCycle>();
+            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
 
-            sequences = new Dictionary<string, List<double>>();
-            sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            //sequences = new Dictionary<string, List<double>>();
+            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             //LearnHtmClassifier();
+         
 
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
-
+            #region output of the serialization
+            
+            //           ///BEGIN 'HtmClassifier'
+            //10 | S1_ - 1.0 - 0 - 1 - 2 - 3 - 4:  S1_ - 1.0 - 0 - 1 - 2 - 3 - 4 - 2:  S1_0 - 1 - 2 - 3 - 4 - 2 - 5:  S1_1 - 2 - 3 - 4 - 2 - 5 - 0:  S1_2 - 3 - 4 - 2 - 5 - 0 - 1:  S1_3 - 4 - 2 - 5 - 0 - 1 - 2:  S1_4 - 2 - 5 - 0 - 1 - 2 - 3:  S1_2 - 5 - 0 - 1 - 2 - 3 - 4:  S1_5 - 0 - 1 - 2 - 3 - 4 - 2:  |
+            // END 'HtmClassifier'
+            #endregion
 
         }
+
 
         /// <summary>
         /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
