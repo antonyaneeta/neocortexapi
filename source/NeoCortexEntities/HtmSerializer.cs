@@ -1893,6 +1893,22 @@ namespace NeoCortexApi.Entities
         {
             SerializeValue<string>(value, sw);
         }
+        public void SerializeValue<TIN>(Dictionary<TIN, List<int[]>> value, StreamWriter sw)
+        {
+            sw.Write(ValueDelimiter);
+            if (value != null)
+            {
+                foreach (var val in value)
+                {
+
+                    sw.Write(val.Key.ToString());
+                    sw.Write(KeyValueDelimiter);
+                    sw.Write(ValueDelimiter);
+
+                }
+            }
+            sw.Write(ParameterDelimiter);
+        }
 
         private void SerializeValue<TIN>(List<TIN> value, StreamWriter sw)
         {
