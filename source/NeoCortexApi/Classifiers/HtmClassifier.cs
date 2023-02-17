@@ -550,23 +550,23 @@ namespace NeoCortexApi.Classifiers
                 }
                 else if (data.Contains(HtmSerializer.KeyValueDelimiter))
                 {
-                    string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-                    for (int i = 0; i < str.Length; i++)
-                    {
-                        string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
-                        for (int j = 0; i < str.Length-1; i++)
+                    //string[] str = data.Split(HtmSerializer.ParameterDelimiter);
+                    //for (int i = 0; i < str.Length; i++)
+                   // {
+                        //string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
+                        for (int j = 0; j < data.Length-1; j++)
                         {
                             switch (j)
                             {
                                 case 0:
-                                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
+                                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(cls.m_AllInputs, data);
                                     break;
                                 default:
                                     break;
                             }
                         }
                     }
-                }
+                //}
                 else
                 {
                     string[] str = data.Split(HtmSerializer.ParameterDelimiter);

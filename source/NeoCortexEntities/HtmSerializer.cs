@@ -1912,17 +1912,33 @@ namespace NeoCortexApi.Entities
         }
 
 
-        public Dictionary<TIN, List<int[]>> ReadDictSIarray1<TIN>(String reader)
+        public Dictionary<TIN, List<int[]>> ReadDictSIarray1<TIN>(Dictionary<TIN, List<int[]>> m_AllInputs, String reader)
         {
-            string[] str = reader.Split(ParameterDelimiter);
+            // S1_0.9-1-2-3-4-2-5:  14803,21348,3789,823,2403,14152,| 3725,828,17002,2752,14391,6873,14715,7849,|
+           
+            //string[] str = reader.Split(ParameterDelimiter);
+            
             Dictionary<TIN, List<int[]>> keyValues = new Dictionary<TIN, List<int[]>>();
-            for (int i = 0; i < str.Length; i++)
+            //for (int i = 0; i < str.Length; i++)
+            //{
+            //
+            // S1_0.9-1-2-3-4-2-5:
+            // tokens[1] --> 14803,21348,3789,823,2403,14152,| 3725,828,17002,2752,14391,6873,14715,7849,|
+            //parametersArray --> 14803,21348,3789,823,2403,14152,       &      3725,828,17002,2752,14391,6873,14715,7849,
+            //parametersArray [0]  14803,21348,3789,823,2403,14152
+            //parametersArray [0]  3725,828,17002,2752,14391,6873,14715,7849,
+
+
+                var tokens = (reader.Split(KeyValueDelimiter));
+                var parametersArray = tokens[1].Split(ParameterDelimiter);
+            List<int[]> li = new List<int[]>();
+            for (int i = 0; i < parametersArray.Length-1; i++)
             {
-                var tokens = (str[i].Split(KeyValueDelimiter));
-        ;
-                string[] values = tokens[1].Split(ElementsDelimiter);
+      
+
+                string[] values = parametersArray[i].Split(ElementsDelimiter);
                 int[] arrayValues = new int[values.Length - 1];
-                List<int[]> li = new List<int[]>();
+               
                 for (int j = 0; j < values.Length - 1; j++)
                 {
                     arrayValues[j] = Convert.ToInt32(values[j].Trim());
@@ -1930,11 +1946,15 @@ namespace NeoCortexApi.Entities
 
                 }
                 li.Add(arrayValues);
-                string value = tokens[0].Trim();
-                TIN tIN = (TIN)(object)value.ToString();
-                keyValues.Add(tIN, li);
             }
-            return keyValues;
+            string value = tokens[0].Trim();
+                TIN tIN = (TIN)(object)value.ToString();
+
+                if (!m_AllInputs.ContainsKey(tIN))
+                     m_AllInputs.Add(tIN, li);
+                //}
+                
+                return m_AllInputs;
         }
 
         //public Dictionary<String, int[]> RReadDictionaryIIValue(string reader)
@@ -2187,7 +2207,10 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
-
+        public Dictionary<object, List<int[]>> ReadDictSIarray1<T>(Dictionary<object, List<int[]>> m_AllInputs, string v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }
