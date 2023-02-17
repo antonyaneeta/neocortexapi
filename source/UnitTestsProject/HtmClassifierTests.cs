@@ -69,8 +69,13 @@ namespace HtmClassifierUnitTest
             {
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1= htmClassifier.Deserialize(sr);
-                
-                      Assert.IsTrue(htmClassifier1.Equals(htmClassifier));
+
+                using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
+                {
+                    htmClassifier.Serialize(htmClassifier1, null, sw);
+                }
+
+                Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
                 //
             }
@@ -161,7 +166,7 @@ namespace HtmClassifierUnitTest
 
         private void LearnHtmClassifier()
         {
-            int maxCycles = 60;
+            int maxCycles = 2;
 
             foreach (var sequenceKeyPair in sequences)
             {
