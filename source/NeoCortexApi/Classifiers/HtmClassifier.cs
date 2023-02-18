@@ -530,6 +530,11 @@ namespace NeoCortexApi.Classifiers
         #endregion
 
         #region Deserialize
+        /// <summary>
+        /// Deserialize the Classifier Private fileds
+        /// </summary>
+        /// <param name="sr"></param>
+        /// <returns></returns>
         public HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
         {
             //throw new NotImplementedException();
@@ -552,20 +557,20 @@ namespace NeoCortexApi.Classifiers
                 {
                     //string[] str = data.Split(HtmSerializer.ParameterDelimiter);
                     //for (int i = 0; i < str.Length; i++)
-                   // {
-                        //string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
-                        for (int j = 0; j < data.Length-1; j++)
+                    // {
+                    //string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
+                    for (int j = 0; j < data.Length - 1; j++)
+                    {
+                        switch (j)
                         {
-                            switch (j)
-                            {
-                                case 0:
-                                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(cls.m_AllInputs, data);
-                                    break;
-                                default:
-                                    break;
-                            }
+                            case 0:
+                                cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(cls.m_AllInputs, data);
+                                break;
+                            default:
+                                break;
                         }
                     }
+                }
                 //}
                 else
                 {
@@ -579,24 +584,24 @@ namespace NeoCortexApi.Classifiers
                                     cls.maxRecordedElements = ser.ReadIntValue(str[i]);
                                     break;
                                 }
-                            //case 1:
-                            //    {
-                            //        string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
-                            //        for (int j = 0; i < str.Length; i++)
-                            //        {
-                            //            switch (i)
-                            //            {
-                            //                case 0:
-                            //                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
-                            //                    break;
-                            //                default:
-                            //                    break;
-                            //            }
-                            //        }
+                                //case 1:
+                                //    {
+                                //        string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
+                                //        for (int j = 0; i < str.Length; i++)
+                                //        {
+                                //            switch (i)
+                                //            {
+                                //                case 0:
+                                //                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
+                                //                    break;
+                                //                default:
+                                //                    break;
+                                //            }
+                                //        }
 
-                            //        //cls.m_AllInputs = ser.ReadKeyISValue(str[i]);
-                            //        break;
-                            //    }
+                                //        //cls.m_AllInputs = ser.ReadKeyISValue(str[i]);
+                                //        break;
+                                //    }
 
 
                         }

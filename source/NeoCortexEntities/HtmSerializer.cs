@@ -2107,6 +2107,36 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
+        #region File coparison for serialiaze deserialize of Classifier class.
+        public bool FileCompare(string file1, string file2)
+        {
+
+            // Determine if the same file was referenced two times.
+            if (file1 == file2)
+            {
+                // Return true to indicate that the files are the same.
+                return true;
+            }
+
+            // Open the two files.
+            using (StreamReader sr = new StreamReader(file1))
+            {
+                //This allows you to do one Read operation.
+                var f1 = sr.ReadToEnd();
+
+                using (StreamReader sr1 = new StreamReader(file2))
+                {
+                    //This allows you to do one Read full document.
+                    var f2 = sr1.ReadToEnd();
+
+                    var bol = f1.Equals(f2);
+
+                    return bol;
+                }
+            }
+        }
+        #endregion
+
 
         public static bool IsEqual(object obj1, object obj2)
         {
