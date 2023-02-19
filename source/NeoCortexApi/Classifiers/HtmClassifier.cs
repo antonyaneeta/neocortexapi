@@ -521,12 +521,15 @@ namespace NeoCortexApi.Classifiers
             ser.SerializeValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
         }
-        #region Deserialize
-        public static object Deserialize<TIN, TOUT>(StreamReader sr, string name)
+        #endregion
+
+        #region Deserialization
+        public static object Deserialize(StreamReader sr, string name)
         {
             //TODO
-            int maxRecordedElements = default;
-            List<TIN> m_AllInputs = default;
+            //int maxRecordedElements = default;
+            //List<TIN> m_AllInputs = default;
+            HtmClassifier<TIN, TOUT> htm = new HtmClassifier<TIN, TOUT>();
 
             while (sr.Peek() > 0)
             {
@@ -541,21 +544,16 @@ namespace NeoCortexApi.Classifiers
                 }
                 if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements)))
                 {
-                    maxRecordedElements = HtmSerializer.Deserialize<int>(sr, nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements));
+                    htm.maxRecordedElements = HtmSerializer.Deserialize<int>(sr, nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements));
                 }
                 if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.m_AllInputs)))
                 {
-                    m_AllInputs = HtmSerializer.Deserialize<List<TIN>>(sr, nameof(HtmClassifier<TIN, TOUT>.m_AllInputs));
+                    //htm.m_AllInputs = HtmSerializer.Deserialize<List<TIN>>(sr, nameof(HtmClassifier<TIN, TOUT>.m_AllInputs));
                 }
             }
 
-            return new HtmClassifier<TIN, TOUT>(maxRecordedElements, m_AllInputs);
+            return htm ;
         }
-
-
-    }
-}
-
         #endregion
 
         #region For refernce
