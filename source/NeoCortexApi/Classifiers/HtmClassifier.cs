@@ -526,7 +526,7 @@ namespace NeoCortexApi.Classifiers
         #region Deserialization
         public static object Deserialize(StreamReader sr, string name)
         {
-            //TODO
+            //// TODO
             //int maxRecordedElements = default;
             //List<TIN> m_AllInputs = default;
             HtmClassifier<TIN, TOUT> htm = new HtmClassifier<TIN, TOUT>();
