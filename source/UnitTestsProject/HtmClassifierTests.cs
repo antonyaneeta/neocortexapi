@@ -89,6 +89,41 @@ namespace HtmClassifierUnitTest
 
         }
 
+
+        /// <summary>
+        /// add multiple Squence and train for 60 cycles ,with SP+TM. SP is pretrained on the given input pattern set.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierSerializeDEserialize()
+        {
+            sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
+            sequences.Add("S3", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            LearnHtmClassifier();
+
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
+                HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
+
+                using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
+                {
+                    htmClassifier.Serialize(htmClassifier1, null, sw);
+                }
+
+
+            }
+
+            HtmSerializer htmSerializer = new HtmSerializer();
+
+            var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
+            Console.WriteLine("*************File compared and found : " + bol);
+        }
+
         /// <summary>
         /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
         /// and check from this sequence each input, will we get prediction or not.
@@ -171,7 +206,7 @@ namespace HtmClassifierUnitTest
 
         private void LearnHtmClassifier()
         {
-            int maxCycles = 2;
+            int maxCycles = 60;
 
             foreach (var sequenceKeyPair in sequences)
             {
