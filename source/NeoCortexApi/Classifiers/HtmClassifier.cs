@@ -520,8 +520,7 @@ namespace NeoCortexApi.Classifiers
             //}
             // ser.SerializeValue(inputSequence, sw);
 
-
-            ser.SerializeValue1(m_AllInputs, sw);
+            ser.SerializeDictionaryValue(m_AllInputs, sw);
 
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
 

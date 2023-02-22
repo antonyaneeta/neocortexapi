@@ -1969,7 +1969,14 @@ namespace NeoCortexApi.Entities
         //    return keyValues;
         //}
 
-        public void SerializeValue1<TIN>(Dictionary<TIN, List<int[]>> value, StreamWriter sw)
+
+        /// <summary>
+        /// serialise the HtmClassifer class parameter --> private Dictionary<TIN, List<int[]>> m_AllInputs 
+        /// </summary>
+        /// <typeparam name="TIN"></typeparam>
+        /// <param name="value"></param>
+        /// <param name="sw"></param>
+        public void SerializeDictionaryValue<TIN>(Dictionary<TIN, List<int[]>> value, StreamWriter sw)
         {
             sw.WriteLine();
             sw.Write(ValueDelimiter);
