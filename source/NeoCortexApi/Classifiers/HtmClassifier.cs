@@ -46,9 +46,9 @@ namespace NeoCortexApi.Classifiers
     {
         private int maxRecordedElements = 10;
 
-        private List<TIN> inputSequence = new List<TIN>();
+        //private List<TIN> inputSequence = new List<TIN>();
 
-        private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
+        //private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
         /// <summary>
         /// Recording of all SDRs. See maxRecordedElements.
@@ -563,7 +563,7 @@ namespace NeoCortexApi.Classifiers
                         switch (j)
                         {
                             case 0:
-                                cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(cls.m_AllInputs, data);
+                                cls.m_AllInputs = ser.ReadDictSIarrayList<TIN>(cls.m_AllInputs, data);
                                 break;
                             default:
                                 break;
@@ -591,7 +591,7 @@ namespace NeoCortexApi.Classifiers
                                 //            switch (i)
                                 //            {
                                 //                case 0:
-                                //                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
+                                //                    cls.m_AllInputs = ser.ReadDictSIarrayList<TIN>(str[j]);
                                 //                    break;
                                 //                default:
                                 //                    break;
