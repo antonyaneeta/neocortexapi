@@ -505,9 +505,7 @@ namespace NeoCortexApi.Classifiers
         public void Serialize(object obj, string name, StreamWriter sw)
         {
             //TODO
-
             HtmSerializer ser = new HtmSerializer();
-
             ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
             ser.SerializeValue(maxRecordedElements, sw);
             //if (typeof(double) == typeof(TIN))
@@ -518,12 +516,47 @@ namespace NeoCortexApi.Classifiers
             //{
             //    ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
             //}
+
             // ser.SerializeValue(inputSequence, sw);
 
             ser.SerializeDictionaryValue(m_AllInputs, sw);
 
+            // ser.SerializeValue(inputSequence, sw);
+            ser.SerializeValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
+        }
+        #endregion
 
+        #region DeserializationTrial
+        public static object DeserializeTrial(StreamReader sr, string name)
+        {
+            //// TODO
+            //int maxRecordedElements = default;
+            //List<TIN> m_AllInputs = default;
+            HtmClassifier<TIN, TOUT> htm = new HtmClassifier<TIN, TOUT>();
+
+            while (sr.Peek() > 0)
+            {
+                var content = sr.ReadLine();
+                if (content.StartsWith("Begin") && content.Contains(name))
+                {
+                    continue;
+                }
+                if (content.StartsWith("End") && content.Contains(name))
+                {
+                    break;
+                }
+                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements)))
+                {
+                    htm.maxRecordedElements = HtmSerializer.Deserialize<int>(sr, nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements));
+                }
+                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.m_AllInputs)))
+                {
+                    //htm.m_AllInputs = HtmSerializer.Deserialize<List<TIN>>(sr, nameof(HtmClassifier<TIN, TOUT>.m_AllInputs));
+                }
+            }
+
+            return htm ;
         }
 
         #endregion
@@ -642,5 +675,7 @@ namespace NeoCortexApi.Classifiers
         //}
         #endregion
     }
+
 }
+
 
