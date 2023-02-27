@@ -32,6 +32,7 @@ namespace HtmClassifierUnitTest
         private Dictionary<string, List<double>> sequences;
         private string fileName;
 
+
         [TestInitialize]
         public void Setup()
         {
@@ -45,6 +46,7 @@ namespace HtmClassifierUnitTest
 
             fileName = $"{TestContext.TestName}.txt";
             HtmSerializer.Reset();
+
 
         }
 
