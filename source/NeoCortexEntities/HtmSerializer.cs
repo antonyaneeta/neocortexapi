@@ -1,4 +1,6 @@
+
 ﻿using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -1896,6 +1898,7 @@ namespace NeoCortexApi.Entities
         {
             SerializeValue<string>(value, sw);
         }
+
         public void SerializeValue<TIN>(Dictionary<TIN, List<int[]>> value, StreamWriter sw)
         {
             sw.Write(ValueDelimiter);
@@ -1923,9 +1926,12 @@ namespace NeoCortexApi.Entities
                     sw.Write(val.ToString());
                     sw.Write(ElementsDelimiter);
                 }
+
             }
+
             sw.Write(ParameterDelimiter);
         }
+
 
 
         public Dictionary<TIN, List<int[]>> ReadDictSIarray1<TIN>(Dictionary<TIN, List<int[]>> m_AllInputs, String reader)
@@ -2015,6 +2021,7 @@ namespace NeoCortexApi.Entities
 
         }
     
+
 
 
 
@@ -2260,10 +2267,13 @@ namespace NeoCortexApi.Entities
             return true;
         }
 
+
         public Dictionary<object, List<int[]>> ReadDictSIarray1<T>(Dictionary<object, List<int[]>> m_AllInputs, string v)
+
         {
             throw new NotImplementedException();
         }
     }
 
 }
+
