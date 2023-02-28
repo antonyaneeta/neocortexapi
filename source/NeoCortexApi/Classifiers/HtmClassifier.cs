@@ -47,9 +47,9 @@ namespace NeoCortexApi.Classifiers
     {
         private int maxRecordedElements = 10;
 
-        private List<TIN> inputSequence = new List<TIN>();
+        //private List<TIN> inputSequence = new List<TIN>();
 
-        private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
+        //private Dictionary<int[], int> inputSequenceMap = new Dictionary<int[], int>();
 
         /// <summary>
         /// Recording of all SDRs. See maxRecordedElements.
@@ -676,14 +676,17 @@ namespace NeoCortexApi.Classifiers
                 // If the line contains a key-value pair, deserialize it
                 if (data.Contains(HtmSerializer.KeyValueDelimiter))
                 {
-                    var kvp = ser.ReadDictSIarray1<TIN>(cls.m_AllInputs, data);
+
+                    var kvp = ser.ReadDictSIarrayList<TIN>(cls.m_AllInputs, data);
                     cls.m_AllInputs = kvp;
+
                 }
                 // Otherwise, parse the parameters in the line and set them in the HtmClassifier
                 else
                 {
                     // Split the line into its parameters
                     string[] str = data.Split(HtmSerializer.ParameterDelimiter);
+
 
                     // Skip lines with no parameters
                     if (str.Length == 0)

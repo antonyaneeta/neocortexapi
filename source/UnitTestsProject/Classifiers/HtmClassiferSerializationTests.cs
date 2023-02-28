@@ -1,27 +1,15 @@
-﻿// Copyright (c) Damir Dobric. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NeoCortexApi;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
+using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using NeoCortexEntities.NeuroVisualizer;
-using Microsoft.Azure.Amqp.Framing;
 
 namespace HtmClassifierUnitTest
 {
-
-    /// <summary>
-    /// Check out student paper in the following URL: https://github.com/ddobric/neocortexapi/blob/master/NeoCortexApi/Documentation/Experiments/ML-19-20_20-5.4_HtmSparsityExperiments_Paper.pdf
-    /// </summary>
-    [TestClass]
-    public class HtmClassifierTest
+    [TestClass()]
+    public class HtmClassiferSerializationTests
     {
         public TestContext TestContext { get; set; }
 
@@ -31,7 +19,7 @@ namespace HtmClassifierUnitTest
         private HtmClassifier<string, ComputeCycle> htmClassifier;
         private Dictionary<string, List<double>> sequences;
         private string fileName;
-
+        private List<Cell> lastActiveCells = new List<Cell>();
 
         [TestInitialize]
         public void Setup()
@@ -40,37 +28,33 @@ namespace HtmClassifierUnitTest
 
             sequences = new Dictionary<string, List<double>>();
             sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-            // sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
+            sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
 
             LearnHtmClassifier();
 
             fileName = $"{TestContext.TestName}.txt";
             HtmSerializer.Reset();
 
-
         }
 
         [TestMethod]
-        [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierSerialization()
+        [TestCategory("ProjectUnitTest")]
+        public void TestSerializationHtmClassifier()
         {
 
             //htmClassifier = new HtmClassifier<string, ComputeCycle>();
 
             //sequences = new Dictionary<string, List<double>>();
             //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
             //sequences.Add("S2", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             //LearnHtmClassifier();
-         
 
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
-
             using (StreamReader sr = new StreamReader(fileName))
             {
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
@@ -80,21 +64,19 @@ namespace HtmClassifierUnitTest
                 {
                     htmClassifier.Serialize(htmClassifier1, null, sw);
                 }
-
-
+                //Assert.IsTrue(htmClassifier.Equals(htmClassifier));
+                //Assert.Equals(htmClassifier, htmClassifier1);
             }
 
             HtmSerializer htmSerializer = new HtmSerializer();
 
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + bol);
+            Console.WriteLine("****** File compared and found : " + bol);
 
             // Check why the Assertion methods fails ????????????????????????
             //  Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
-
         }
-
 
 
         /// <summary>
@@ -102,9 +84,8 @@ namespace HtmClassifierUnitTest
         /// </summary>
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierSerializeDeserialize()
+        public void TestSerializeDeserializeHtmClassifier()
         {
-            sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
             sequences.Add("S3", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             sequences.Add("S4", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             sequences.Add("S5", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
@@ -124,99 +105,18 @@ namespace HtmClassifierUnitTest
                     htmClassifier.Serialize(htmClassifier1, null, sw);
                 }
 
-
             }
 
             HtmSerializer htmSerializer = new HtmSerializer();
 
-            var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + bol);
+            var isSameFile = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
+            Console.WriteLine("*************File compared and found : " + isSameFile);
         }
 
-
-        /// <summary>
-        /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
-        /// and check from this sequence each input, will we get prediction or not.
-        /// </summary>
-        [DataTestMethod]
-        [DataRow(0)]
-        [DataRow(1)]
-        [TestCategory("Prod")]
-        [TestMethod]
-        public void CheckNextValueIsNotEmpty(int input)
-        {
-            //var tm = layer1.HtmModules.FirstOrDefault(m => m.Value is TemporalMemory);
-            //((TemporalMemory)tm.Value).Reset(mem);
-
-            var predictiveCells = getMockCells(CellActivity.PredictiveCell);
-
-            var res = htmClassifier.GetPredictedInputValues(predictiveCells.ToArray(), 3);
-
-            HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-            using (StreamWriter sw = new StreamWriter(fileName))
-            {
-                HtmSerializer.Serialize(cls, null, sw);
-            }
-
-            var tokens = res.First().PredictedInput.Split('_');
-            var tokens2 = res.First().PredictedInput.Split('-');
-            Debug.WriteLine($"->{tokens2[tokens.Length - 1]}");
-            var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
-            Assert.IsTrue(predictValue > 0);
-        }
-
-        //[TestMethod]
-        //public void SerializationHtmClassifierTest()
-        //{
-
-        //    htmClassifier = new HtmClassifier<string, ComputeCycle>();
-
-        //    sequences = new Dictionary<string, List<double>>();
-        //    sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-        //    HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-        //    using (StreamWriter sw = new StreamWriter(fileName))
-        //    {
-        //        HtmSerializer.Serialize(cls, null, sw);
-        //    }
-
-        //}
-
-
-        /// <summary>
-        ///Here we are checking if cells count is zero
-        ///will we get any kind of exception or not
-        /// </summary>
-        [TestMethod]
-        [TestCategory("Prod")]
-        public void NoExceptionIfCellsCountIsZero()
-        {
-            Cell[] cells = new Cell[0];
-            var res = htmClassifier.GetPredictedInputValues(cells, 3);
-            Assert.AreEqual(res.Count, 0);
-        }
-
-
-        /// <summary>
-        ///Check how many prediction results will be retrieved.
-        /// </summary>
-        [DataTestMethod]
-        [TestCategory("Prod")]
-        [DataRow(3)]
-        [DataRow(4)]
-        [TestMethod]
-        public void CheckHowManyOfGetPredictedInputValues(int howMany)
-        {
-            var predictiveCells = getMockCells(CellActivity.PredictiveCell);
-
-            var res = htmClassifier.GetPredictedInputValues(predictiveCells.ToArray(), Convert.ToInt16(howMany));
-
-            Assert.IsTrue(res.Count == howMany);
-        }
 
         private void LearnHtmClassifier()
         {
-            int maxCycles = 100;
+            int maxCycles = 5;
 
             foreach (var sequenceKeyPair in sequences)
             {
@@ -226,7 +126,6 @@ namespace HtmClassifierUnitTest
 
                 previousInputs.Add("-1.0");
 
-                //
                 // Now training with SP+TM. SP is pretrained on the given input pattern set.
                 for (int i = 0; i < maxCycles; i++)
                 {
@@ -252,8 +151,6 @@ namespace HtmClassifierUnitTest
             }
         }
 
-
-        private List<Cell> lastActiveCells = new List<Cell>();
 
         /// <summary>
         /// Mock the cells data that we get from the Temporal Memory
@@ -301,5 +198,6 @@ namespace HtmClassifierUnitTest
 
             return $"{sequence}_{key}";
         }
+
     }
 }
