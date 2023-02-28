@@ -1,0 +1,52 @@
+Aim
+
+To implement Serialization for HtmClassifier
+
+Challenges
+
+Find the parameters of the Class HtmClassier that needs to implement ISerializable
+Find which all linked classes need to have a similar implementations.
+Learn and Implement Unit testing implementations and assertions
+
+Plan
+Sprint 1
+
+Team formation - Team ALPHA
+Frork neocortexapi , clone locally , build and open solution in Visual Studio
+Analyse and learn how HTMClassifer is implemented and works
+Look into a sample project NeocortexApiPersistenceSample. for undersatand how serialisation with Spatial Pooler is demonstrated
+Initial branch creations.
+Initial plan commit. Inividual start of work.
+
+Sprint 2
+
+Implement ISerializable in HTMClassifier class.
+Refer Unit test project <a href="https://github.com/ddobric/neocortexapi/blob/master/source/UnitTestsProject/HTMSerializationTests_P2.cs"
+Start initial code anlaysis.
+Validate the plan and code knowledge with team members and with Professor and Turtors
+
+Sprint 3
+
+Validate the corecctness of code
+Try adding UT for any relevent codes
+Assert results of serialised parameter values.
+Peer code Review.
+Start wiht documentation.
+
+Sprint 4.
+
+Completion of all coding .
+Review and final code freeze
+Demo of output
+Completion of Documentation and video.
+
+References
+
+HTM School: https://www.youtube.com/playlist?list=PL3yXMgtrZmDqhsFQzwUC9V8MeeVOQ7eZ9&app=desktop
+HTM Overview: https://en.wikipedia.org/wiki/Hierarchical_temporal_memory
+
+Team Alpha : Members
+
+Amith Nair https://github.com/AmithNair97
+Rohit Suresh https://github.com/r0hit1997
+Aneeta Antony https://github.com/antonyaneeta

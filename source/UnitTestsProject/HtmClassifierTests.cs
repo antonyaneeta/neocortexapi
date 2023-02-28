@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NeoCortexEntities.NeuroVisualizer;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace HtmClassifierUnitTest
 {
@@ -31,6 +32,7 @@ namespace HtmClassifierUnitTest
         private Dictionary<string, List<double>> sequences;
         private string fileName;
 
+
         [TestInitialize]
         public void Setup()
         {
@@ -45,6 +47,7 @@ namespace HtmClassifierUnitTest
             fileName = $"{TestContext.TestName}.txt";
             HtmSerializer.Reset();
 
+
         }
 
         [TestMethod]
@@ -56,15 +59,18 @@ namespace HtmClassifierUnitTest
 
             //sequences = new Dictionary<string, List<double>>();
             //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+
             //sequences.Add("S2", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             //LearnHtmClassifier();
+         
 
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
+
             using (StreamReader sr = new StreamReader(fileName))
             {
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
@@ -88,6 +94,7 @@ namespace HtmClassifierUnitTest
 
 
         }
+
 
 
         /// <summary>
@@ -125,6 +132,7 @@ namespace HtmClassifierUnitTest
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
             Console.WriteLine("*************File compared and found : " + bol);
         }
+
 
         /// <summary>
         /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
