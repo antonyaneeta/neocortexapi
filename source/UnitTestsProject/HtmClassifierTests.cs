@@ -3,16 +3,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NeoCortexEntities.NeuroVisualizer;
-using Microsoft.Azure.Amqp.Framing;
+
 
 namespace HtmClassifierUnitTest
 {
@@ -54,17 +52,10 @@ namespace HtmClassifierUnitTest
         [TestCategory("ProjectUnitTests")]
         public void TestHtmClassifierSerialization()
         {
+            //Given
+            //HtmClassifier Lerrning method is called in [TestInitialize] Setup() method
 
-            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
-
-            //sequences = new Dictionary<string, List<double>>();
-            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-            //sequences.Add("S2", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-            //LearnHtmClassifier();
-         
-
+            //When
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
@@ -76,22 +67,21 @@ namespace HtmClassifierUnitTest
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
 
+                //Then
+                //Check if 2 instances are equal by overriding Equals method in Classifier class
+                Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
+
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
                 {
                     htmClassifier.Serialize(htmClassifier1, null, sw);
                 }
 
-
             }
 
+            //File comparison of SErialised and deserialised HtmCLassifier instances.
             HtmSerializer htmSerializer = new HtmSerializer();
-
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
             Console.WriteLine("*************File compared and found : " + bol);
-
-            // Check why the Assertion methods fails ????????????????????????
-            //  Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
-
 
         }
 

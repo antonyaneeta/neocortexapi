@@ -41,16 +41,10 @@ namespace HtmClassifierUnitTest
         [TestCategory("ProjectUnitTest")]
         public void TestSerializationHtmClassifier()
         {
+            //Given
+            //HtmClassifier Lerrning method is called in [TestInitialize] Setup() method
 
-            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
-
-            //sequences = new Dictionary<string, List<double>>();
-            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-            //sequences.Add("S2", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-            //LearnHtmClassifier();
-
-
+            //When
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
@@ -60,21 +54,24 @@ namespace HtmClassifierUnitTest
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
 
+                //Then
+                //Check if 2 instances are equal 
+                Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
+
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
                 {
                     htmClassifier.Serialize(htmClassifier1, null, sw);
                 }
-                //Assert.IsTrue(htmClassifier.Equals(htmClassifier));
-                //Assert.Equals(htmClassifier, htmClassifier1);
+
             }
 
+
+
+            //File comparison method to check if serialize deserialised worked.
             HtmSerializer htmSerializer = new HtmSerializer();
 
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
             Console.WriteLine("****** File compared and found : " + bol);
-
-            // Check why the Assertion methods fails ????????????????????????
-            //  Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
         }
 
@@ -99,6 +96,7 @@ namespace HtmClassifierUnitTest
             {
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
+                Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
                 {
@@ -116,7 +114,7 @@ namespace HtmClassifierUnitTest
 
         private void LearnHtmClassifier()
         {
-            int maxCycles = 5;
+            int maxCycles = 100;
 
             foreach (var sequenceKeyPair in sequences)
             {
