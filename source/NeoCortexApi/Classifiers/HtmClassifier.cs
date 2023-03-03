@@ -3,6 +3,7 @@
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -40,7 +41,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     /// <typeparam name="TIN"></typeparam>
     /// <typeparam name="TOUT"></typeparam>
-
+    
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>,ISerializable
 
 
@@ -54,6 +55,8 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Recording of all SDRs. See maxRecordedElements.
         /// </summary>
+        public HtmClassifier()
+        { }
         private Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
 
         /// <summary>
@@ -505,29 +508,12 @@ namespace NeoCortexApi.Classifiers
         /// <exception cref="NotImplementedException"></exception>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            //TODO
+            //Serialization code below.
 
             HtmSerializer ser = new HtmSerializer();
             ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
-
             ser.SerializeValue(maxRecordedElements, sw);
-            //if (typeof(double) == typeof(TIN))
-            //{
-            //    ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
-            //}
-            //else if (typeof(string) == typeof(TIN))
-            //{
-            //    ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
-            //}
-
-
-            // ser.SerializeValue(inputSequence, sw);
-
-
             ser.SerializeDictionaryValue(m_AllInputs, sw);
-
-            // ser.SerializeValue(inputSequence, sw);
-            ser.SerializeValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
         }
         #endregion
@@ -651,6 +637,9 @@ namespace NeoCortexApi.Classifiers
 
         //    return cls;
         //}
+        
+
+        
         public HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
         {
             // Create a new HtmSerializer and HtmClassifier
@@ -701,6 +690,71 @@ namespace NeoCortexApi.Classifiers
             // Return the deserialized HtmClassifier
             return cls;
         }
+        /// <summary>
+        /// 
+        /// The deafault Equals is overide for HtmCLassifier parameters.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
+                return false;
+            HtmClassifier<TIN, TOUT> other = (HtmClassifier<TIN, TOUT>)obj;
+            if (maxRecordedElements != other.maxRecordedElements)
+                return false;
+            if (m_AllInputs == null)
+            {
+                if (other.m_AllInputs != null)
+                    return false;
+            }
+
+            // TODO also check condition--> m_AllInputs.ContainsKey(other.m_AllInputs.Keys.First);
+            foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
+            {
+
+                foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
+                {
+                    if (kvp.Key.Equals(val.Key))
+                    {
+
+                        for (int i = 0; i < kvp.Value.Count; i++)
+                        {
+                            bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
+                            Console.WriteLine(result);
+                            if (result == false)
+                                return false;
+                        }
+
+                    }
+
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Hashcode override
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(maxRecordedElements, m_AllInputs);
+        }
+
+        //public override bool Equals(object obj)
+        //{
+
+        //    if (this == obj)
+        //        return true;
+        //    if (obj == null)
+        //        return false;
+        //    if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
+        //        return false;
+        //    return true ;
+        //}
 
 
         #endregion
