@@ -690,6 +690,9 @@ namespace NeoCortexApi.Classifiers
             // Return the deserialized HtmClassifier
             return cls;
         }
+        #endregion
+
+
         /// <summary>
         /// 
         /// The deafault Equals is overide for HtmCLassifier parameters.
@@ -744,45 +747,8 @@ namespace NeoCortexApi.Classifiers
             return HashCode.Combine(maxRecordedElements, m_AllInputs);
         }
 
-        //public override bool Equals(object obj)
-        //{
+     
 
-        //    if (this == obj)
-        //        return true;
-        //    if (obj == null)
-        //        return false;
-        //    if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
-        //        return false;
-        //    return true ;
-        //}
-
-
-        #endregion
-
-
-
-
-        #region For refernce
-
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    var excludeMembers = new List<string>
-        //    {
-        //        nameof(EncoderBase.Properties),
-        //        nameof(EncoderBase.halfWidth),
-        //        nameof(EncoderBase.rangeInternal),
-        //        nameof(EncoderBase.nInternal),
-        //        nameof(EncoderBase.encLearningEnabled),
-        //        nameof(EncoderBase.flattenedFieldTypeList),
-        //        nameof(EncoderBase.decoderFieldTypes),
-        //        nameof(EncoderBase.topDownValues),
-        //        nameof(EncoderBase.bucketValues),
-        //        nameof(EncoderBase.topDownMapping),
-
-        //    };
-        //    HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
-        //}
-        #endregion
     }
 
 }
