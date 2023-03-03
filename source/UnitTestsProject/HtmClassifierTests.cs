@@ -133,6 +133,49 @@ namespace HtmClassifierUnitTest
             Console.WriteLine("*************File compared and found : " + bol);
         }
 
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierSerialization1()
+        {
+            // Arrange
+            HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();
+            LearnHtmClassifier();
+            string expectedSerialized = SerializeHtmClassifier(expected);
+
+            // Act
+            string actualSerialized;
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                HtmClassifier<string, ComputeCycle> actual = htmClassifier.Deserialize(sr);
+                actualSerialized = SerializeHtmClassifier(actual);
+            }
+
+            // Assert
+            Assert.AreEqual(expectedSerialized, actualSerialized);
+        }
+
+        private string SerializeHtmClassifier(HtmClassifier<string, ComputeCycle> htmClassifier)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (StreamWriter sw = new StreamWriter(ms))
+                {
+                    htmClassifier.Serialize(htmClassifier, null, sw);
+                    sw.Flush();
+                    ms.Position = 0;
+                    using (StreamReader sr = new StreamReader(ms))
+                    {
+                        return sr.ReadToEnd();
+                    }
+                }
+            }
+        }
+
+
 
         /// <summary>
         /// Here our taget is to whether we are getting any predicted value for input we have given one sequence s1
