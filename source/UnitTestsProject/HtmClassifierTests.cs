@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NeoCortexEntities.NeuroVisualizer;
+using Microsoft.Azure.Amqp.Framing;
 
 namespace HtmClassifierUnitTest
 {
@@ -23,7 +24,6 @@ namespace HtmClassifierUnitTest
     public class HtmClassifierTest
     {
         public TestContext TestContext { get; set; }
-
 
         private int numColumns = 1024;
         private int cellsPerColumn = 25;
@@ -52,10 +52,10 @@ namespace HtmClassifierUnitTest
         public void TestHtmClassifierSerialization()
         {
 
-            htmClassifier = new HtmClassifier<string, ComputeCycle>();
+            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
 
-            sequences = new Dictionary<string, List<double>>();
-            sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            //sequences = new Dictionary<string, List<double>>();
+            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
             //LearnHtmClassifier();
 
