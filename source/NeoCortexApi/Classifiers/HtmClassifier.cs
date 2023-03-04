@@ -103,7 +103,7 @@ namespace NeoCortexApi.Classifiers
                     bestSdr = sdr;
                 }
             }
-
+            
             similarity = Math.Round(MathHelpers.CalcArraySimilarity(bestSdr, cellIndicies), 2);
 
             return maxSameBits;

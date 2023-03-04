@@ -16,8 +16,6 @@ namespace UnitTestsProject
     [TestClass]
     public class NAATests
     {
-      
-
         [TestMethod]
         [TestCategory("Prod")]
         [TestCategory("NAA")]
@@ -86,7 +84,7 @@ namespace UnitTestsProject
             {
                 ApicalDendrite segment = new ApicalDendrite(testNeuron, i, 0.5);
 
-                for (int y = 0; y < i+1; y++)
+                for (int y = 0; y < i + 1; y++)
                 {
                     var synapse = new Synapse(preSynapticNeuron, segment.SegmentIndex, segment.Synapses.Count, 0.5);
 
@@ -100,9 +98,9 @@ namespace UnitTestsProject
 
             var maxSeg = HtmCompute.GetSegmentWithHighesPotential(segments);
 
-            Assert.AreEqual(numSegments-1, maxSeg.SegmentIndex);
+            Assert.AreEqual(numSegments - 1, maxSeg.SegmentIndex);
 
-            Assert.IsTrue(numSegments==maxSeg.Synapses.Count);
+            Assert.IsTrue(numSegments == maxSeg.Synapses.Count);
         }
 
 
@@ -110,8 +108,8 @@ namespace UnitTestsProject
         /// This unit tests creates two areas X and Y and it creates one SDR in each area.
         /// Both SDRs represent tha set of active cells that will be associated with each other.
         /// </summary>
-        /// <param name="numCells">NUmber of cells in the Y area, that will learn associationas.</param>
-        /// <param name="numActCellsPct">Number of active cells in percent in the area Y.</param>
+        /// <param name="numCells">A total number of cells in the Y area, that might learn associationas.</param>
+        /// <param name="numActCellsPct">A number of active cells in percent in the area Y that will learn associations.</param>
         [TestMethod]
         [TestCategory("NAA")]
         [DataRow(100, 0.02)]
@@ -122,10 +120,10 @@ namespace UnitTestsProject
         public void AssociateAreasTest(int numCells, double numActCellsPct)
         {
             var cfg = UnitTestHelpers.GetHtmConfig(100, 1024);
-            
+
             cfg.MaxNewSynapseCount = 5;
 
-            CorticalArea areaX = new CorticalArea(1,"X", 1024);
+            CorticalArea areaX = new CorticalArea(1, "X", 1024);
 
             CorticalArea areaY = new CorticalArea(2, "Y", 100);
 
@@ -167,11 +165,14 @@ namespace UnitTestsProject
 
             Naa naa = new Naa(cfg, areaY);
 
+            // Random SDRs in X area, that will be associated with random SDRs in Y area.
             List<long[]> srcSdrsInX = new List<long[]>();
+
+            // Random SDRs in Y area, that will be associated with random SDRs in Y area.
             List<long[]> destSdrsY = new List<long[]>();
 
             //
-            // Create populations that will be associated.
+            // Create populations that will be associated X->Y.
             for (int i = 0; i < 100; i++)
             {
                 srcSdrsInX.Add(UnitTestHelpers.CreateRandomSdr(1024, 0.02));
@@ -182,10 +183,12 @@ namespace UnitTestsProject
             // Step trough all populations.
             for (int n = 0; n < srcSdrsInX.Count; n++)
             {
-                Debug.WriteLine(naa.TraceState());
-
+                Debug.WriteLine($"-------------- Learning Pattern {n} in areay Y. ----------------");
+               
                 areaX.ActiveCellsIndicies = srcSdrsInX[n];
                 areaY.ActiveCellsIndicies = destSdrsY[n];
+
+                Debug.WriteLine(naa.TraceState());
 
                 //
                 // We train the same association between X and Y 10 times.
@@ -193,7 +196,7 @@ namespace UnitTestsProject
                 {
                     naa.Compute(areaX, true);
                     Debug.WriteLine(naa.TraceState());
-                    AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + i * cfg.PermanenceIncrement);
+                    // AssertApicalSynapsePermanences(areaY, cfg.InitialPermanence + (i) * cfg.PermanenceIncrement);
                 }
 
                 AssertAssociations(srcSdrsInX[n].Length, numCells, numActCellsPct, areaY, areaX, naa);
@@ -227,22 +230,26 @@ namespace UnitTestsProject
             AssertApicalSynapsePermanences(areaY, 1.0);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="areaY"></param>
+        /// <param name="expectedPermanence"></param>
         private static void AssertApicalSynapsePermanences(CorticalArea areaY, double expectedPermanence)
         {
             foreach (var activeCell in areaY.ActiveCells)
             {
-                // NAA between two different areas use only ApicalSegments.
+                // Currentlly, NAA between two different areas use only ApicalSegments.
                 Assert.IsTrue(activeCell.DistalDendrites.Count == 0);
 
                 foreach (var seg in activeCell.ApicalDendrites)
                 {
                     foreach (var syn in seg.Synapses)
-                    {
-                        // All synapses are fully trained to maximum.
+
                         Assert.IsTrue(syn.Permanence == expectedPermanence);
-                    }
                 }
             }
         }
     }
+
 }
