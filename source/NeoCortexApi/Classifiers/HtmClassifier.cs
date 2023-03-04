@@ -53,6 +53,15 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         private Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
 
+        public HtmClassifier(int maxRecordedElements, List<TIN> allInputs)
+        {
+            this.maxRecordedElements = maxRecordedElements;
+        }
+
+        public HtmClassifier()
+        {
+        }
+
         /// <summary>
         /// Mapping between the input key and the SDR assootiated to the input.
         /// </summary>
@@ -522,6 +531,38 @@ namespace NeoCortexApi.Classifiers
             ser.SerializeValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN,TOUT>), sw);
 
+        }
+        #endregion
+
+        #region Deserialize
+        public static object Deserialize<TIN, TOUT>(StreamReader sr, string name)
+        {
+            //TODO
+            int maxRecordedElements = default;
+            List<TIN> m_AllInputs = default;
+
+            while (sr.Peek() > 0)
+            {
+                var content = sr.ReadLine();
+                if (content.StartsWith("Begin") && content.Contains(name))
+                {
+                    continue;
+                }
+                if (content.StartsWith("End") && content.Contains(name))
+                {
+                    break;
+                }
+                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements)))
+                {
+                    maxRecordedElements = HtmSerializer.Deserialize<int>(sr, nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements));
+                }
+                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.m_AllInputs)))
+                {
+                    m_AllInputs = HtmSerializer.Deserialize<List<TIN>>(sr, nameof(HtmClassifier<TIN, TOUT>.m_AllInputs));
+                }
+            }
+
+            return new HtmClassifier<TIN, TOUT>(maxRecordedElements, m_AllInputs);
         }
         #endregion
 
