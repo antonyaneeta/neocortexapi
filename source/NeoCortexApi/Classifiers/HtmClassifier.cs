@@ -493,6 +493,29 @@ namespace NeoCortexApi.Classifiers
 
             return same.Count();
         }
+        public bool Equals(HtmClassifier<TIN, TOUT> obj)
+        {
+            if (this == obj)
+                return true;
+
+            if (obj == null)
+                return false;
+
+            if (maxRecordedElements == null)
+            {
+                if (obj.maxRecordedElements != null)
+                    return false;
+            }
+            else if (!maxRecordedElements.Equals(obj.maxRecordedElements))
+                return false;
+
+            if (m_AllInputs == null)
+            {
+                if (obj.m_AllInputs != null)
+                    return false;
+            }
+            //TODO
+        }
 
         #region Serialization
         /// <summary>
