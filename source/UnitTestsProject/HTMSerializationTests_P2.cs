@@ -34,6 +34,7 @@ namespace UnitTestsProject
         {
             fileName = $"{TestContext.TestName}.txt";
             HtmSerializer.Reset();
+
         }
 
         private void LearnHtmClassifier()
@@ -73,6 +74,7 @@ namespace UnitTestsProject
                 }
             }
         }
+
 
         private List<Cell> lastActiveCells = new List<Cell>();
 
@@ -124,8 +126,10 @@ namespace UnitTestsProject
 
 
         [TestMethod]
+
         [TestCategory("SEProjectInitialTrials")]
         public void SerializationHtmClassifierTest()
+
         {
 
             htmClassifier = new HtmClassifier<string, ComputeCycle>();
@@ -133,22 +137,29 @@ namespace UnitTestsProject
             sequences = new Dictionary<string, List<double>>();
             sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
 
+
             LearnHtmClassifier();
+
 
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
-                htmClassifier.Serialize(htmClassifier, null, sw);
+
+                HtmSerializer.Serialize(htmClassifier, null, sw);
+
             }
 
             using (StreamReader sr = new StreamReader(fileName))
             {
+
+               
 
                 //var htmClassifier1 = HtmSerializer.Deserialize<HtmClassifier<object, object>>(sr);
 
                 //Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
             }
         }
+
 
 
 
