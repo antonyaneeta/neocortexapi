@@ -1932,69 +1932,56 @@ namespace NeoCortexApi.Entities
             sw.Write(ParameterDelimiter);
         }
 
-
-
+        /// <summary>
+        /// Deserialize the Dictionary parameter in the HtmClassifer Class.
+        /// </summary>
+        /// <typeparam name="TIN"></typeparam>
+        /// <param name="m_AllInputs"></param>
+        /// <param name="reader"></param>
+        /// <returns></returns>
         public Dictionary<TIN, List<int[]>> ReadDictSIarrayList<TIN>(Dictionary<TIN, List<int[]>> m_AllInputs, String reader)
 
         {
             // S1_0.9-1-2-3-4-2-5:  14803,21348,3789,823,2403,14152,| 3725,828,17002,2752,14391,6873,14715,7849,|
-           
-            //string[] str = reader.Split(ParameterDelimiter);
-            
+
             Dictionary<TIN, List<int[]>> keyValues = new Dictionary<TIN, List<int[]>>();
-            //for (int i = 0; i < str.Length; i++)
-            //{
-            //
-            // S1_0.9-1-2-3-4-2-5:
-            // tokens[1] --> 14803,21348,3789,823,2403,14152,| 3725,828,17002,2752,14391,6873,14715,7849,|
+
+            //token[0] --> S1_0.9-1-2-3-4-2-5:
+            //tokens[1] --> 14803,21348,3789,823,2403,14152,| 3725,828,17002,2752,14391,6873,14715,7849,|
             //parametersArray --> 14803,21348,3789,823,2403,14152,       &      3725,828,17002,2752,14391,6873,14715,7849,
             //parametersArray [0]  14803,21348,3789,823,2403,14152
             //parametersArray [0]  3725,828,17002,2752,14391,6873,14715,7849,
 
 
-                var tokens = (reader.Split(KeyValueDelimiter));
-                var parametersArray = tokens[1].Split(ParameterDelimiter);
+            var tokens = (reader.Split(KeyValueDelimiter));
+            var parametersArray = tokens[1].Split(ParameterDelimiter);
             List<int[]> li = new List<int[]>();
-            for (int i = 0; i < parametersArray.Length-1; i++)
+            for (int i = 0; i < parametersArray.Length - 1; i++)
             {
-      
+
 
                 string[] values = parametersArray[i].Split(ElementsDelimiter);
                 int[] arrayValues = new int[values.Length - 1];
-               
+
                 for (int j = 0; j < values.Length - 1; j++)
                 {
                     arrayValues[j] = Convert.ToInt32(values[j].Trim());
-                    
 
                 }
                 li.Add(arrayValues);
             }
             string value = tokens[0].Trim();
-                TIN tIN = (TIN)(object)value.ToString();
+            TIN tIN = (TIN)(object)value.ToString();
 
-                if (!m_AllInputs.ContainsKey(tIN))
-                     m_AllInputs.Add(tIN, li);
-                //}
-                
-                return m_AllInputs;
+            if (!m_AllInputs.ContainsKey(tIN))
+                m_AllInputs.Add(tIN, li);
+
+            return m_AllInputs;
         }
-
-        //public Dictionary<String, int[]> RReadDictionaryIIValue(string reader)
-        //{
-        //    string[] str = reader.Split(ElementsDelimiter);
-        //    Dictionary<String, int[]> keyValues = new Dictionary<String, int[]>();
-        //    for (int i = 0; i < str.Length - 1; i++)
-        //    {
-        //        string[] tokens = str[i].Split(KeyValueDelimiter);
-        //        keyValues.Add(key:Convert.ToString(tokens[0].Trim()), value: ReadArrayInt(tokens[1]));
-        //    }
-        //    return keyValues;
-        //}
 
 
         /// <summary>
-        /// serialise the HtmClassifer class parameter --> private Dictionary<TIN, List<int[]>> m_AllInputs 
+        /// serialize the HtmClassifer class parameter --> private Dictionary<TIN, List<int[]>> m_AllInputs 
         /// </summary>
         /// <typeparam name="TIN"></typeparam>
         /// <param name="value"></param>
@@ -2011,21 +1998,12 @@ namespace NeoCortexApi.Entities
                     for (int i = 0; i < val.Value.Count; i++)
                     {
                         SerializeValue(val.Value[i], sw);
-                        //sw.Write(ElementsDelimiter);
+
                     }
                     sw.WriteLine();
-
-                    //sw.Write(val.Key.ToString());
                 }
-                //sw.Write(ParameterDelimiter);
             }
-
         }
-    
-
-
-
-
 
 
         /// <summary>

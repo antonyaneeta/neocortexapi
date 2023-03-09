@@ -516,6 +516,7 @@ namespace NeoCortexApi.Classifiers
             ser.SerializeDictionaryValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
         }
+
         #endregion
 
         #region DeserializationTrial
@@ -726,7 +727,7 @@ namespace NeoCortexApi.Classifiers
                         for (int i = 0; i < kvp.Value.Count; i++)
                         {
                             bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
-                            Console.WriteLine(result);
+                           
                             if (result == false)
                                 return false;
                         }
