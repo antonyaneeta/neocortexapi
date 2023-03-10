@@ -519,40 +519,6 @@ namespace NeoCortexApi.Classifiers
 
         #endregion
 
-        #region DeserializationTrial
-        public static object DeserializeTrial(StreamReader sr, string name)
-        {
-            //// TODO
-            //int maxRecordedElements = default;
-            //List<TIN> m_AllInputs = default;
-            HtmClassifier<TIN, TOUT> htm = new HtmClassifier<TIN, TOUT>();
-
-            while (sr.Peek() > 0)
-            {
-                var content = sr.ReadLine();
-                if (content.StartsWith("Begin") && content.Contains(name))
-                {
-                    continue;
-                }
-                if (content.StartsWith("End") && content.Contains(name))
-                {
-                    break;
-                }
-                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements)))
-                {
-                    htm.maxRecordedElements = HtmSerializer.Deserialize<int>(sr, nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements));
-                }
-                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.m_AllInputs)))
-                {
-                    //htm.m_AllInputs = HtmSerializer.Deserialize<List<TIN>>(sr, nameof(HtmClassifier<TIN, TOUT>.m_AllInputs));
-                }
-            }
-
-            return htm ;
-        }
-
-        #endregion
-
         #region Deserialize
         /// <summary>
         /// Deserialize the Classifier Private fileds
