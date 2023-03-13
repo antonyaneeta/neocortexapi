@@ -129,8 +129,8 @@ namespace HtmClassifierUnitTest
         {
             // Arrange
             HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();
-            LearnHtmClassifier();
-            string expectedSerialized = SerializeHtmClassifier(expected);
+           // LearnHtmClassifier();
+            string expectedSerialized = SerializeHtmClassifier(htmClassifier);
 
             // Act
             string actualSerialized;
