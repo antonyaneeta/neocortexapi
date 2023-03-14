@@ -600,7 +600,9 @@ namespace NeoCortexApi.Classifiers
                     return false;
             }
 
-            // TODO also check condition--> m_AllInputs.ContainsKey(other.m_AllInputs.Keys.First);
+            //check condition--> m_AllInputs.have same number of key value pairs as other.m_AllInputs 
+            if (m_AllInputs.Count != other.m_AllInputs.Count)
+                return false;
             foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
             {
 
