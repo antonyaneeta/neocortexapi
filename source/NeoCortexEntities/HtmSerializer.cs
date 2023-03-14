@@ -1942,6 +1942,7 @@ namespace NeoCortexApi.Entities
         public Dictionary<TIN, List<int[]>> ReadDictSIarrayList<TIN>(Dictionary<TIN, List<int[]>> m_AllInputs, String reader)
 
         {
+            //Sample values inline
             // S1_0.9-1-2-3-4-2-5:  14803,21348,3789,823,2403,14152,| 3725,828,17002,2752,14391,6873,14715,7849,|
 
             Dictionary<TIN, List<int[]>> keyValues = new Dictionary<TIN, List<int[]>>();

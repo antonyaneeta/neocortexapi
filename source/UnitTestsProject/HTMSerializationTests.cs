@@ -14,6 +14,51 @@ namespace UnitTestsProject
     {
 
         [TestMethod]
+        [TestCategory("SerializationHTMClassifierParmeter")]
+        public void SerializeDictionarystringListIntArray()
+        {
+            //Given
+            HtmSerializer htm = new HtmSerializer();
+            Dictionary<String, List<int[]>> keyValuePairsActual = new Dictionary<String, List<int[]>>();
+            List<int[]> arrayList = new List<int[]>();
+            arrayList.Add(new int[] { 1, 2, 3 });
+
+            List<int[]> arrayList1 = new List<int[]>();
+            arrayList1.Add(new int[] { 4, 5, 6 });
+            arrayList1.Add(new int[] { 7, 8, 9 });
+
+            Dictionary<String, List<int[]>> keyValuesExpected = new Dictionary<String, List<int[]>>
+            {
+                { "Hello", arrayList },
+                { "GoodMorning",arrayList1 }
+            };
+
+            //When
+            //Serialize and save in file.
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDictionarystringListIntArray)}.txt"))
+            {
+                htm.SerializeDictionaryValue(keyValuesExpected, sw);
+            }
+
+            //deserialize from file to get result to Dictionary parameter
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDictionarystringListIntArray)}.txt"))
+            {
+                while (sr.Peek() >= 0)
+                {
+                    string data = sr.ReadLine();
+                    if (data.Contains(HtmSerializer.KeyValueDelimiter))
+                        keyValuesExpected = htm.ReadDictSIarrayList(keyValuePairsActual, data);
+                }
+
+            }
+
+            //Then
+            Assert.IsTrue(keyValuePairsActual.SequenceEqual(keyValuesExpected));
+
+        }
+
+
+        [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeValueTest()
         {
@@ -421,13 +466,12 @@ namespace UnitTestsProject
         }
 
 
-
         [TestMethod]
         [TestCategory("Serialization")]
         public void SerializeDictionaryTest()
         {
             //Proximal + Distal
-            //Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw
+            //Dictionary<Segment, List<Synapse>> keyValuesExpected, StreamWriter sw
         }
 
         [TestMethod]
@@ -435,7 +479,7 @@ namespace UnitTestsProject
         public void SerializeSegmentDictionaryTest()
         {
             //Proximal + Distal
-            //Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw
+            //Dictionary<Segment, List<Synapse>> keyValuesExpected, StreamWriter sw
         }
         /// <summary>
         /// Test SpatialPooler.

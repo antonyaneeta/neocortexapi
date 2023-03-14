@@ -38,8 +38,7 @@ namespace HtmClassifierUnitTest
 
             sequences = new Dictionary<string, List<double>>();
             sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-            // sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
-
+          
             LearnHtmClassifier();
 
             fileName = $"{TestContext.TestName}.txt";
@@ -52,10 +51,10 @@ namespace HtmClassifierUnitTest
         [TestCategory("ProjectUnitTests")]
         public void TestHtmClassifierSerialization()
         {
-            //Given
-            //HtmClassifier Lerrning method is called in [TestInitialize] Setup() method
+    //Given
+    //HtmClassifier Lerrning method is called in [TestInitialize] Setup() method
 
-            //When
+    //When
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
@@ -67,9 +66,9 @@ namespace HtmClassifierUnitTest
                 // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
 
-                //Then
-                //Check if 2 instances are equal by overriding Equals method in Classifier class
-                Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
+    //Then
+    //Check if 2 instances are equal by overriding Equals method in Classifier class
+    Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
                 {
@@ -78,10 +77,10 @@ namespace HtmClassifierUnitTest
 
             }
 
-            //File comparison of SErialised and deserialised HtmCLassifier instances.
+    //File comparison of Serialised and deserialised HtmCLassifier instances.
             HtmSerializer htmSerializer = new HtmSerializer();
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + bol);
+            Console.WriteLine("*************Files compared and found : " + bol);
 
         }
 
@@ -94,12 +93,13 @@ namespace HtmClassifierUnitTest
         [TestCategory("ProjectUnitTests")]
         public void TestHtmClassifierSerializeDeserialize()
         {
+    //Given
             sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
             sequences.Add("S3", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             sequences.Add("S4", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             sequences.Add("S5", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             LearnHtmClassifier();
-
+    //When
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
@@ -118,14 +118,15 @@ namespace HtmClassifierUnitTest
             }
 
             HtmSerializer htmSerializer = new HtmSerializer();
-
+    //Then
+    //File comparison of Serialised and deserialised HtmCLassifier instances.
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + bol);
+            Console.WriteLine("*************Files compared and found : " + bol);
         }
 
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierSerialization1()
+        public void TestHtmClassifierSerializationAgain()
         {
             // Arrange
             HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();

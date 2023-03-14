@@ -134,7 +134,7 @@ namespace HtmClassifierUnitTest
                             previousInputs.RemoveAt(0);
 
                         // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
-                        // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                        // In that case the starting sequence 4-5-6 might have the same SDR as 1-2-3-4-5-6,
                         // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
                         // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
                         // memorized, it will match as the first one.
