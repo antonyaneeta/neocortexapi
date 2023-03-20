@@ -564,8 +564,12 @@ namespace NeoCortexApi.Classifiers
 
 
                     // Skip lines with no parameters
-                    if (str.Length == 0)
+                    foreach (string value in str)
+                    {
+                        String.IsNullOrWhiteSpace(value);
                         continue;
+                    }
+                            
 
                     // If the first parameter is an integer, set it as the maxRecordedElements property
                     if (int.TryParse(str[0], out int maxRecordedElements))

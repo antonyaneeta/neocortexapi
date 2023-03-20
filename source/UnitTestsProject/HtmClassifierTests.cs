@@ -63,7 +63,7 @@ namespace HtmClassifierUnitTest
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
+                // HtmClassifier<string, ComputeCycle> htmClassifierDeserilalized = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
 
     //Then
@@ -106,7 +106,7 @@ namespace HtmClassifierUnitTest
             }
             using (StreamReader sr = new StreamReader(fileName))
             {
-                // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
+                // HtmClassifier<string, ComputeCycle> htmClassifierDeserilalized = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
 
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
@@ -166,6 +166,25 @@ namespace HtmClassifierUnitTest
             }
         }
 
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierDeserializeEmptySpace()
+        {
+            
+            //When
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                sw.Write("|");
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+               
+                HtmClassifier<string, ComputeCycle> htmClassifierDeserilalized = htmClassifier.Deserialize(sr);
+
+            }
+
+        }
 
 
         /// <summary>
@@ -198,24 +217,6 @@ namespace HtmClassifierUnitTest
             var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
             Assert.IsTrue(predictValue > 0);
         }
-
-        //[TestMethod]
-        //public void SerializationHtmClassifierTest()
-        //{
-
-        //    htmClassifier = new HtmClassifier<string, ComputeCycle>();
-
-        //    sequences = new Dictionary<string, List<double>>();
-        //    sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-        //    HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-        //    using (StreamWriter sw = new StreamWriter(fileName))
-        //    {
-        //        HtmSerializer.Serialize(cls, null, sw);
-        //    }
-
-        //}
-
 
         /// <summary>
         ///Here we are checking if cells count is zero

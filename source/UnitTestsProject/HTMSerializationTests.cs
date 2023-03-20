@@ -471,7 +471,7 @@ namespace UnitTestsProject
         public void SerializeDictionaryTest()
         {
             //Proximal + Distal
-            //Dictionary<Segment, List<Synapse>> keyValuesExpected, StreamWriter sw
+            //Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw
         }
 
         [TestMethod]
@@ -479,7 +479,7 @@ namespace UnitTestsProject
         public void SerializeSegmentDictionaryTest()
         {
             //Proximal + Distal
-            //Dictionary<Segment, List<Synapse>> keyValuesExpected, StreamWriter sw
+            //Dictionary<Segment, List<Synapse>> keyValues, StreamWriter sw
         }
         /// <summary>
         /// Test SpatialPooler.
