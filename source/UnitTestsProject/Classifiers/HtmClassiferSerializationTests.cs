@@ -111,6 +111,35 @@ namespace HtmClassifierUnitTest
             Console.WriteLine("*************File compared and found : " + isSameFile);
         }
 
+        /// <summary>        
+        /// Here we intend to check failure of serialization deserialization.
+        /// </summary>        
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestSerializeDeserializeHtmClassifierFailure()
+        {
+            //Given
+            sequences.Add("S6", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            sequences.Add("S7", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            sequences.Add("S8", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            LearnHtmClassifier();
+            HtmClassifier<string, ComputeCycle> htmClassifier1;
+
+            //When
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader("deserialize-retest.txt"))
+            {
+                htmClassifier1 = htmClassifier.Deserialize(sr);
+            }
+
+            //Then
+            Assert.IsFalse(htmClassifier.Equals(htmClassifier1));
+        }
+
+        
 
         private void LearnHtmClassifier()
         {
