@@ -3,16 +3,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
-using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
-using NeoCortexApi.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NeoCortexEntities.NeuroVisualizer;
-using Microsoft.Azure.Amqp.Framing;
+
 
 namespace HtmClassifierUnitTest
 {
@@ -40,8 +38,7 @@ namespace HtmClassifierUnitTest
 
             sequences = new Dictionary<string, List<double>>();
             sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-            // sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
-
+          
             LearnHtmClassifier();
 
             fileName = $"{TestContext.TestName}.txt";
@@ -54,17 +51,10 @@ namespace HtmClassifierUnitTest
         [TestCategory("ProjectUnitTests")]
         public void TestHtmClassifierSerialization()
         {
+    //Given
+    //HtmClassifier Lerrning method is called in [TestInitialize] Setup() method
 
-            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
-
-            //sequences = new Dictionary<string, List<double>>();
-            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-            //sequences.Add("S2", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-            //LearnHtmClassifier();
-         
-
+    //When
 
             using (StreamWriter sw = new StreamWriter(fileName))
             {
@@ -73,25 +63,24 @@ namespace HtmClassifierUnitTest
 
             using (StreamReader sr = new StreamReader(fileName))
             {
-                // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
+                // HtmClassifier<string, ComputeCycle> htmClassifierDeserilalized = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
+
+    //Then
+    //Check if 2 instances are equal by overriding Equals method in Classifier class
+    Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
                 {
                     htmClassifier.Serialize(htmClassifier1, null, sw);
                 }
 
-
             }
 
+    //File comparison of Serialised and deserialised HtmCLassifier instances.
             HtmSerializer htmSerializer = new HtmSerializer();
-
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + bol);
-
-            // Check why the Assertion methods fails ????????????????????????
-            //  Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
-
+            Console.WriteLine("*************Files compared and found : " + bol);
 
         }
 
@@ -104,19 +93,20 @@ namespace HtmClassifierUnitTest
         [TestCategory("ProjectUnitTests")]
         public void TestHtmClassifierSerializeDeserialize()
         {
+    //Given
             sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
             sequences.Add("S3", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             sequences.Add("S4", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             sequences.Add("S5", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
             LearnHtmClassifier();
-
+    //When
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
             using (StreamReader sr = new StreamReader(fileName))
             {
-                // HtmClassifier<string, ComputeCycle> htmClassifier1 = new HtmClassifier<string, ComputeCycle>();
+                // HtmClassifier<string, ComputeCycle> htmClassifierDeserilalized = new HtmClassifier<string, ComputeCycle>();
                 HtmClassifier<string, ComputeCycle> htmClassifier1 = htmClassifier.Deserialize(sr);
 
                 using (StreamWriter sw = new StreamWriter("deserialize-retest.txt"))
@@ -128,9 +118,72 @@ namespace HtmClassifierUnitTest
             }
 
             HtmSerializer htmSerializer = new HtmSerializer();
-
+    //Then
+    //File comparison of Serialised and deserialised HtmCLassifier instances.
             var bol = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + bol);
+            Console.WriteLine("*************Files compared and found : " + bol);
+        }
+
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierSerializationAgain()
+        {
+            // Arrange
+            HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();
+           // LearnHtmClassifier();
+            string expectedSerialized = SerializeHtmClassifier(htmClassifier);
+
+            // Act
+            string actualSerialized;
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                HtmClassifier<string, ComputeCycle> actual = htmClassifier.Deserialize(sr);
+                actualSerialized = SerializeHtmClassifier(actual);
+            }
+
+            // Assert
+            Assert.AreEqual(expectedSerialized, actualSerialized);
+        }
+
+        private string SerializeHtmClassifier(HtmClassifier<string, ComputeCycle> htmClassifier)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (StreamWriter sw = new StreamWriter(ms))
+                {
+                    htmClassifier.Serialize(htmClassifier, null, sw);
+                    sw.Flush();
+                    ms.Position = 0;
+                    using (StreamReader sr = new StreamReader(ms))
+                    {
+                        return sr.ReadToEnd();
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        public void TestHtmClassifierDeserializeEmptySpace()
+        {
+            
+            //When
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                sw.Write("|");
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+               
+                HtmClassifier<string, ComputeCycle> htmClassifierDeserilalized = htmClassifier.Deserialize(sr);
+
+            }
+
         }
 
 
@@ -164,24 +217,6 @@ namespace HtmClassifierUnitTest
             var predictValue = Convert.ToInt32(tokens2[tokens.Length - 1]);
             Assert.IsTrue(predictValue > 0);
         }
-
-        //[TestMethod]
-        //public void SerializationHtmClassifierTest()
-        //{
-
-        //    htmClassifier = new HtmClassifier<string, ComputeCycle>();
-
-        //    sequences = new Dictionary<string, List<double>>();
-        //    sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
-
-        //    HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
-        //    using (StreamWriter sw = new StreamWriter(fileName))
-        //    {
-        //        HtmSerializer.Serialize(cls, null, sw);
-        //    }
-
-        //}
-
 
         /// <summary>
         ///Here we are checking if cells count is zero

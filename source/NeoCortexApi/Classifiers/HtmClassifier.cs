@@ -3,6 +3,7 @@
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
 using NeoCortexApi.Utility;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -40,7 +41,7 @@ namespace NeoCortexApi.Classifiers
     /// </summary>
     /// <typeparam name="TIN"></typeparam>
     /// <typeparam name="TOUT"></typeparam>
-
+    
     public class HtmClassifier<TIN, TOUT> : IClassifier<TIN, TOUT>,ISerializable
 
 
@@ -54,6 +55,8 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// Recording of all SDRs. See maxRecordedElements.
         /// </summary>
+        public HtmClassifier()
+        { }
         private Dictionary<TIN, List<int[]>> m_AllInputs = new Dictionary<TIN, List<int[]>>();
 
         /// <summary>
@@ -505,63 +508,13 @@ namespace NeoCortexApi.Classifiers
         /// <exception cref="NotImplementedException"></exception>
         public void Serialize(object obj, string name, StreamWriter sw)
         {
-            //TODO
+            //Serialization code below.
 
             HtmSerializer ser = new HtmSerializer();
             ser.SerializeBegin(nameof(HtmClassifier<TIN, TOUT>), sw);
-
             ser.SerializeValue(maxRecordedElements, sw);
-            //if (typeof(double) == typeof(TIN))
-            //{
-            //    ser.SerializeValue(inputSequence.Cast<double>().ToList(), sw);
-            //}
-            //else if (typeof(string) == typeof(TIN))
-            //{
-            //    ser.SerializeValue(inputSequence.Cast<string>().ToList(), sw);
-            //}
-
-
-            // ser.SerializeValue(inputSequence, sw);
-
-
             ser.SerializeDictionaryValue(m_AllInputs, sw);
-
-            // ser.SerializeValue(inputSequence, sw);
-            ser.SerializeValue(m_AllInputs, sw);
             ser.SerializeEnd(nameof(HtmClassifier<TIN, TOUT>), sw);
-        }
-        #endregion
-
-        #region DeserializationTrial
-        public static object DeserializeTrial(StreamReader sr, string name)
-        {
-            //// TODO
-            //int maxRecordedElements = default;
-            //List<TIN> m_AllInputs = default;
-            HtmClassifier<TIN, TOUT> htm = new HtmClassifier<TIN, TOUT>();
-
-            while (sr.Peek() > 0)
-            {
-                var content = sr.ReadLine();
-                if (content.StartsWith("Begin") && content.Contains(name))
-                {
-                    continue;
-                }
-                if (content.StartsWith("End") && content.Contains(name))
-                {
-                    break;
-                }
-                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements)))
-                {
-                    htm.maxRecordedElements = HtmSerializer.Deserialize<int>(sr, nameof(HtmClassifier<TIN, TOUT>.maxRecordedElements));
-                }
-                if (content.Contains(nameof(HtmClassifier<TIN, TOUT>.m_AllInputs)))
-                {
-                    //htm.m_AllInputs = HtmSerializer.Deserialize<List<TIN>>(sr, nameof(HtmClassifier<TIN, TOUT>.m_AllInputs));
-                }
-            }
-
-            return htm ;
         }
 
         #endregion
@@ -572,85 +525,7 @@ namespace NeoCortexApi.Classifiers
         /// </summary>
         /// <param name="sr"></param>
         /// <returns></returns>
-        //public HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
-        //{
-        //    //throw new NotImplementedException();
-        //    HtmSerializer ser = new HtmSerializer();
-        //    HtmClassifier<TIN, TOUT> cls = new HtmClassifier<TIN, TOUT>();
-        //    Dictionary<TIN, int[]> keyValues = new Dictionary<TIN, int[]>();
-
-        //    while (sr.Peek() >= 0)
-        //    {
-        //        string data = sr.ReadLine();
-        //        if (data == string.Empty || data == ser.ReadBegin(nameof(HtmClassifier<TIN, TOUT>)))
-        //        {
-        //            continue;
-        //        }
-        //        else if (data == ser.ReadEnd(nameof(HtmClassifier<TIN, TOUT>)))
-        //        {
-        //            break;
-        //        }
-        //        else if (data.Contains(HtmSerializer.KeyValueDelimiter))
-        //        {
-        //            //string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-        //            //for (int i = 0; i < str.Length; i++)
-        //            // {
-        //            //string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
-        //            for (int j = 0; j < data.Length - 1; j++)
-        //            {
-        //                switch (j)
-        //                {
-        //                    case 0:
-        //                        cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(cls.m_AllInputs, data);
-        //                        break;
-        //                    default:
-        //                        break;
-        //                }
-        //            }
-        //        }
-        //        //}
-        //        else
-        //        {
-        //            string[] str = data.Split(HtmSerializer.ParameterDelimiter);
-        //            for (int i = 0; i < str.Length; i++)
-        //            {
-        //                switch (i)
-        //                {
-        //                    case 0:
-        //                        {
-        //                            cls.maxRecordedElements = ser.ReadIntValue(str[i]);
-        //                            break;
-        //                        }
-        //                        //case 1:
-        //                        //    {
-        //                        //        string[] str1 = data.Split(HtmSerializer.ParameterDelimiter);
-        //                        //        for (int j = 0; i < str.Length; i++)
-        //                        //        {
-        //                        //            switch (i)
-        //                        //            {
-        //                        //                case 0:
-        //                        //                    cls.m_AllInputs = ser.ReadDictSIarray1<TIN>(str[j]);
-        //                        //                    break;
-        //                        //                default:
-        //                        //                    break;
-        //                        //            }
-        //                        //        }
-
-        //                        //        //cls.m_AllInputs = ser.ReadKeyISValue(str[i]);
-        //                        //        break;
-        //                        //    }
-
-
-        //                }
-        //            }
-        //            //return cls;
-
-
-        //        }
-        //    }
-
-        //    return cls;
-        //}
+        
         public HtmClassifier<TIN, TOUT> Deserialize(StreamReader sr)
         {
             // Create a new HtmSerializer and HtmClassifier
@@ -689,8 +564,12 @@ namespace NeoCortexApi.Classifiers
 
 
                     // Skip lines with no parameters
-                    if (str.Length == 0)
+                    foreach (string value in str)
+                    {
+                        String.IsNullOrWhiteSpace(value);
                         continue;
+                    }
+                            
 
                     // If the first parameter is an integer, set it as the maxRecordedElements property
                     if (int.TryParse(str[0], out int maxRecordedElements))
@@ -701,34 +580,67 @@ namespace NeoCortexApi.Classifiers
             // Return the deserialized HtmClassifier
             return cls;
         }
-
-
         #endregion
 
 
+        /// <summary>
+        /// 
+        /// The deafault Equals is overide for HtmCLassifier parameters.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
+                return false;
+            HtmClassifier<TIN, TOUT> other = (HtmClassifier<TIN, TOUT>)obj;
+            if (maxRecordedElements != other.maxRecordedElements)
+                return false;
+            if (m_AllInputs == null)
+            {
+                if (other.m_AllInputs != null)
+                    return false;
+            }
 
+            //check condition--> m_AllInputs.have same number of key value pairs as other.m_AllInputs 
+            if (m_AllInputs.Count != other.m_AllInputs.Count)
+                return false;
+            foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
+            {
 
-        #region For refernce
+                foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
+                {
+                    if (kvp.Key.Equals(val.Key))
+                    {
 
-        //public void Serialize(object obj, string name, StreamWriter sw)
-        //{
-        //    var excludeMembers = new List<string>
-        //    {
-        //        nameof(EncoderBase.Properties),
-        //        nameof(EncoderBase.halfWidth),
-        //        nameof(EncoderBase.rangeInternal),
-        //        nameof(EncoderBase.nInternal),
-        //        nameof(EncoderBase.encLearningEnabled),
-        //        nameof(EncoderBase.flattenedFieldTypeList),
-        //        nameof(EncoderBase.decoderFieldTypes),
-        //        nameof(EncoderBase.topDownValues),
-        //        nameof(EncoderBase.bucketValues),
-        //        nameof(EncoderBase.topDownMapping),
+                        for (int i = 0; i < kvp.Value.Count; i++)
+                        {
+                            bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
+                           
+                            if (result == false)
+                                return false;
+                        }
 
-        //    };
-        //    HtmSerializer.SerializeObject(obj, name, sw, ignoreMembers: excludeMembers);
-        //}
-        #endregion
+                    }
+
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Hashcode override
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(maxRecordedElements, m_AllInputs);
+        }
+
+     
+
     }
 
 }
