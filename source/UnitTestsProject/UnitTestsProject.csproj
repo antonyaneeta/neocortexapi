@@ -71,6 +71,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="Classifiers\ClassifierTestsInputs\ExpectedHtmClassiferObject3.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Classifiers\ClassifierTestsInputs\ExpectedHtmClassiferObject2.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Classifiers\ClassifierTestsInputs\ExpectedHtmClassiferObject.txt">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update="MnistPng28x28\testing\3\1020.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

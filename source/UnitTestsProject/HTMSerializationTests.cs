@@ -14,7 +14,7 @@ namespace UnitTestsProject
     {
 
         [TestMethod]
-        [TestCategory("SerializationHTMClassifierParmeter")]
+        [TestCategory("ProjectUnitTests")]
         public void SerializeDictionarystringListIntArray()
         {
             //Given
