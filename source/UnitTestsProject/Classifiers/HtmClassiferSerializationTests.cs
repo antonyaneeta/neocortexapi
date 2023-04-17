@@ -105,9 +105,8 @@ namespace HtmClassifierUnitTest
             Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
 
-            //File comparison method to check if serialize deserialised worked.
+            //File comparison method to check if serialize deserialize worked.
             HtmSerializer htmSerializer = new HtmSerializer();
-
             var isSameFile = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
             Debug.WriteLine(String.Format("*************File compared and found :  {0}", isSameFile));
 
@@ -410,8 +409,50 @@ namespace HtmClassifierUnitTest
             //Then
             Assert.IsFalse(htmClassifier3.Equals(htmClassifier1));
         }
+       
+        /// <summary>
+        /// The below test checks the condition when in a compared instance of Classifier class 
+        /// where the parameter m_AllInputs or other.m_AllInput is null
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestEqualsReturnFalseWhenInstancesHasNullParameters()
+        {
+            //Given
+            HtmClassifier<string, ComputeCycle> htmClassifierWithNullParameter;
+            HtmClassifier<string, ComputeCycle> htmClassifierActualObject;
+            string E_inFolder = "Classifiers/ClassifierTestsInputs";
 
- 
+            //When
+
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
+            {
+                htmClassifierActualObject = htmClassifier.Deserialize(sr);
+            }
+
+            //The Test file we read below does not contain m_AllInput params so the Condition in the Equals method would be tested accordingly
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\null_m_AllInput_TestValues.txt"))
+            {
+                htmClassifierWithNullParameter = htmClassifier.Deserialize(sr);
+            }
+
+            //Then
+
+            // passing the null object as compared instance to Equal method.
+
+            var isFirstEqualSecond = htmClassifierActualObject.Equals(htmClassifierWithNullParameter);
+            Assert.IsFalse(isFirstEqualSecond);
+
+            //Passsing the instance with null param as reference object in comparison
+            var isSecondEqualFirst = htmClassifierWithNullParameter.Equals(htmClassifierActualObject);
+            Assert.IsFalse(isSecondEqualFirst);
+          
+           
+        }
+
+
+
         private void LearnHtmClassifier()
         {
             int maxCycles = 100;
