@@ -49,6 +49,7 @@ namespace HtmClassifierUnitTest
 
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
+        [TestCategory("Test-Serialization")]
         public void TestHtmClassifierSerialization()
         {
     //Given
@@ -87,10 +88,12 @@ namespace HtmClassifierUnitTest
 
 
         /// <summary>
+        /// here after serialisation deserialization testing if same with file comparison method 
         /// add multiple Sequence and train for 60 cycles ,with SP+TM. SP is pretrained on the given input pattern set.
         /// </summary>
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
+        [TestCategory("Test-Serialization")]
         public void TestHtmClassifierSerializeDeserialize()
         {
     //Given
@@ -124,54 +127,13 @@ namespace HtmClassifierUnitTest
             Console.WriteLine("*************Files compared and found : " + bol);
         }
 
-        [TestMethod]
-        [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierSerializationAgain()
-        {
-            // Arrange
-            HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();
-           // LearnHtmClassifier();
-            string expectedSerialized = SerializeHtmClassifier(htmClassifier);
-
-            // Act
-            string actualSerialized;
-            using (StreamWriter sw = new StreamWriter(fileName))
-            {
-                htmClassifier.Serialize(htmClassifier, null, sw);
-            }
-            using (StreamReader sr = new StreamReader(fileName))
-            {
-                HtmClassifier<string, ComputeCycle> actual = htmClassifier.Deserialize(sr);
-                actualSerialized = SerializeHtmClassifier(actual);
-            }
-
-            // Assert
-            Assert.AreEqual(expectedSerialized, actualSerialized);
-        }
-
-        private string SerializeHtmClassifier(HtmClassifier<string, ComputeCycle> htmClassifier)
-        {
-            using (MemoryStream ms = new MemoryStream())
-            {
-                using (StreamWriter sw = new StreamWriter(ms))
-                {
-                    htmClassifier.Serialize(htmClassifier, null, sw);
-                    sw.Flush();
-                    ms.Position = 0;
-                    using (StreamReader sr = new StreamReader(ms))
-                    {
-                        return sr.ReadToEnd();
-                    }
-                }
-            }
-        }
-
         /// <summary>
-        ///  To check if only white space in serialised .txt file then during deserialise() method ,it  will Skip lines with no parameters
+        ///  To check if only white space in serialised .txt file then during deserialize() method ,it  will Skip lines with no parameters
         /// </summary>
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierDeserializeEmptySpace()
+        [TestCategory("Deserialization-Test-Coverage")]
+        public void TestHtmClassifierDeserializeEmptySpaceConditionCheck()
         {
             
             //When
