@@ -521,7 +521,7 @@ namespace NeoCortexApi.Classifiers
 
         #region Deserialize
         /// <summary>
-        /// Deserialize the Classifier Private fileds
+        /// Deserialize the Classifier Private fields and assigns them to the fields of the Class instance.
         /// </summary>
         /// <param name="sr"></param>
         /// <returns></returns>
@@ -586,47 +586,71 @@ namespace NeoCortexApi.Classifiers
         /// <summary>
         /// 
         /// The default Equals is override for HtmClassifier parameters.
+        /// Ith carefully checks all conditions required for the Equality of two instances of the Classifier Object
+        /// The refence object and compared object is checked for null, checked for type compatibility, presence of each fields, 
+        /// also checking deep inside each complex type object (m_AllInputs) if all keys and Values in KVP are also matching .
+        /// If all conditions pass the objects are found Equal and returns true.
+        /// If any conditions fails then method returns false.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
+            //Checks if the compared object is null or not
             if (obj == null)
                 return false;
+            //The type of objects compared here should be of type HTMClassifier or else equals fails
             if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
                 return false;
             HtmClassifier<TIN, TOUT> other = (HtmClassifier<TIN, TOUT>)obj;
             if (maxRecordedElements != other.maxRecordedElements)
                 return false;
-            if (m_AllInputs == null)
+
+            //check condition--> other.m_AllInputs  is null or empty and consequently with the first value 
+            if (other.m_AllInputs == null || other.m_AllInputs.Count <= 0)
             {
-                if (other.m_AllInputs != null)
+                //if m_AllInputs  has a value this means 2 instances not equal.
+                if (null != m_AllInputs || m_AllInputs.Count > 0)
                     return false;
             }
 
-            //check condition--> m_AllInputs.have same number of key value pairs as other.m_AllInputs 
-            if (m_AllInputs.Count != other.m_AllInputs.Count)
-                return false;
-            foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
+            //check condition--> m_AllInputs  is null and consequently  the other compared object is non null means the objects are unequal
+            if (m_AllInputs == null || m_AllInputs.Count <= 0)
             {
+                //if other.m_AllInputs  has a value this means 2 instances not equal.
+                if (other.m_AllInputs != null || other.m_AllInputs.Count > 0)
+                    return false;
+            }
+            //else if condition check --> "m_AllInputs" have same number of key value pairs as "other.m_AllInputs" 
+            else if (m_AllInputs.Count != other.m_AllInputs.Count)
+                return false;
 
-                foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
+            //check each key values in the m_AllInputs equality check if not same for any then only return false
+            else
+            {
+                foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
                 {
-                    if (kvp.Key.Equals(val.Key))
+
+                    foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
                     {
-
-                        for (int i = 0; i < kvp.Value.Count; i++)
+                        if (kvp.Key.Equals(val.Key))
                         {
-                            bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
 
-                            if (result == false)
-                                return false;
+                            for (int i = 0; i < kvp.Value.Count; i++)
+                            {
+                                bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
+
+                                if (result == false)
+                                    return false;
+                            }
+
                         }
 
                     }
-
                 }
             }
+
+            // returns true if all parameters are found Equal
             return true;
         }
 
