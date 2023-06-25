@@ -88,9 +88,10 @@ namespace HtmClassifierUnitTest
             LearnHtmClassifier();
             //Second HTMClassifier instance initialized.
             HtmClassifier<string, ComputeCycle> htmClassifier1;
+            string E_outFolder = "Classifiers";
 
             //When
-            using (StreamWriter sw = new StreamWriter(fileName))
+            using (StreamWriter sw = new StreamWriter($"{E_outFolder}\\"+fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
