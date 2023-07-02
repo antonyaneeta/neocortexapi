@@ -50,21 +50,31 @@ namespace HtmClassifierUnitTest
             //Given
             //HtmClassifier Learning method is called in [TestInitialize] Setup() method
             HtmClassifier<string, ComputeCycle> htmClassifier1;
+            
+            string testOutputFolder = $"Output-{nameof(HtmClassiferSerializationTests)}";
+            if (Directory.Exists(testOutputFolder))
+                Directory.Delete(testOutputFolder, true);
+            string path = string.Concat(testOutputFolder, @"Output\fileName");
+
+            Directory.CreateDirectory(testOutputFolder);
+
+
+           // string path = string.Concat(testOutputFolder, @"Output\fileName");
 
             //When
-            using (StreamWriter sw = new StreamWriter(fileName))
+            using (StreamWriter sw = new StreamWriter(path))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
-            using (StreamReader sr = new StreamReader(fileName))
+            using (StreamReader sr = new StreamReader(path))
             {
                 //The second instance of HTMClassifier after Deserialization  
                 htmClassifier1 = htmClassifier.Deserialize(sr);
-                //the below is for writing to files and Do File comparison to verify serialization
-                using (StreamWriter sw = new StreamWriter($"{TestContext.TestName}FileTest.txt"))
-                {
-                    htmClassifier.Serialize(htmClassifier1, null, sw);
-                }
+                ////the below is for writing to files and Do File comparison to verify serialization
+                //using (StreamWriter sw = new StreamWriter($"{TestContext.TestName}FileTest.txt"))
+                //{
+                //    htmClassifier.Serialize(htmClassifier1, null, sw);
+                //}
             }
 
             //Then

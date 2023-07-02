@@ -49,18 +49,19 @@ namespace MyExperiment
 
             //Run your experiment code here.
 
-            // Serialization check.
-           HtmClassifier<string, ComputeCycle> htmClassifier = null;
+           // // Serialization check.
+           //HtmClassifier<string, ComputeCycle> htmClassifier = null;
 
-            //When
-            using (StreamWriter sw = new StreamWriter("text.txt"))
-            {
-                htmClassifier.Serialize(htmClassifier, null, sw);
-            }
+           // //When
+           // using (StreamWriter sw = new StreamWriter("text.txt"))
+           // {
+           //     htmClassifier.Serialize(htmClassifier, null, sw);
+           // }
 
-            
+            HtmClassiferSerializationTests htmClassiferSerializationTests = new HtmClassiferSerializationTests();
+            htmClassiferSerializationTests.TestSerializationHtmClassifier();
 
-
+     
 
 
             return Task.FromResult<IExperimentResult>(res); // TODO...
@@ -72,15 +73,6 @@ namespace MyExperiment
         /// <inheritdoc/>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
-            //
-            ExperimentResult res = new ExperimentResult("damir", "123")
-            {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-                
-                Accuracy = (float)0.5,
-            };
-
-            await storageProvider.UploadExperimentResult(res);
 
 
             QueueClient queueClient = new QueueClient(this.config.StorageConnectionString, this.config.Queue);
