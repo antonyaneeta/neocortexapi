@@ -26,6 +26,9 @@ namespace MyExperiment
         private ILogger logger;
 
         private MyConfig config;
+        private HtmClassifier<string, ComputeCycle> htmClassifier;
+
+        private Dictionary<string, List<double>> sequences;
 
         //
         public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
@@ -39,6 +42,8 @@ namespace MyExperiment
 
         public Task<IExperimentResult> Run(string inputFile)
         {
+
+
             // TODO read file
 
             // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
@@ -49,19 +54,31 @@ namespace MyExperiment
 
             //Run your experiment code here.
 
-           // // Serialization check.
-           //HtmClassifier<string, ComputeCycle> htmClassifier = null;
+            // // Serialization check.
 
-           // //When
-           // using (StreamWriter sw = new StreamWriter("text.txt"))
-           // {
-           //     htmClassifier.Serialize(htmClassifier, null, sw);
-           // }
 
-            HtmClassiferSerializationTests htmClassiferSerializationTests = new HtmClassiferSerializationTests();
-            htmClassiferSerializationTests.TestSerializationHtmClassifier();
+            //htmClassifier = new HtmClassifier<string, ComputeCycle>();
 
-     
+            //sequences = new Dictionary<string, List<double>>();
+            //sequences.Add("S1", new List<double>(new double[] { 0.9, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 }));
+            //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 3.0, 4.0, 5.0, 2.0, 5.0 }));
+
+            //HtmClassiferSerializationTests htmClassiferSerializationTests = new HtmClassiferSerializationTests();
+
+            //htmClassiferSerializationTests.LearnHtmClassifier();
+
+            LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
+           htmClassifier= learnHtmClassifierForSerialization.Train();
+
+
+            using (StreamWriter sw = new StreamWriter("SerialiseOutput.txt"))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+
+
+            //res.OutputFiles("SerialiseOutput.txt");
+
 
 
             return Task.FromResult<IExperimentResult>(res); // TODO...
@@ -102,7 +119,7 @@ namespace MyExperiment
 
                         await storageProvider.UploadExperimentResult(result);
 
-                        await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
+                        //await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }
                     catch (Exception ex)
                     {
@@ -113,6 +130,7 @@ namespace MyExperiment
                 {
                     await Task.Delay(500);
                     logger?.LogTrace("Queue empty...");
+                    
                 }
             }
 
