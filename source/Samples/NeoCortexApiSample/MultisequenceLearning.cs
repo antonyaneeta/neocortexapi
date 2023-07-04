@@ -7,6 +7,7 @@ using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 
@@ -21,7 +22,7 @@ namespace NeoCortexApiSample
         /// Runs the learning of sequences.
         /// </summary>
         /// <param name="sequences">Dictionary of sequences. KEY is the sewuence name, the VALUE is th elist of element of the sequence.</param>
-        public Predictor Run(Dictionary<string, List<double>> sequences)
+        public Predictor Run(Dictionary<string, List<double>> sequences, out Predictor serializedPredictor)
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
 
@@ -71,13 +72,13 @@ namespace NeoCortexApiSample
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            return RunExperiment(inputBits, cfg, encoder, sequences);
+            return RunExperiment(inputBits, cfg, encoder, sequences,out serializedPredictor);
         }
 
         /// <summary>
         ///
         /// </summary>
-        private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences)
+        private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences,out Predictor serializedPredictor)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -304,7 +305,21 @@ namespace NeoCortexApiSample
             }
 
             Debug.WriteLine("------------ END ------------");
-           
+
+            using (var writer = new StreamWriter("output.txt"))
+            
+            {
+                cls.Serialize(cls,null,writer);
+            }
+
+
+            using (StreamReader sr = new StreamReader("output.txt"))
+            {
+                HtmClassifier<string, ComputeCycle> serClassifier = new HtmClassifier<string, ComputeCycle>();
+                serClassifier=serClassifier.Deserialize(sr);
+
+                serializedPredictor = new Predictor(layer1, mem, serClassifier);
+            }
             return new Predictor(layer1, mem, cls);
         }
 
