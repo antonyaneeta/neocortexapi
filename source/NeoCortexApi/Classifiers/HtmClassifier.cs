@@ -692,22 +692,22 @@ namespace NeoCortexApi.Classifiers
             sequences.Add("S1", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, }));
             sequences.Add("S2", new List<double>(new double[] { 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 }));
 
-            // Instantiate the MultiSequenceLearning class
-            MultiSequenceLearning experiment = new MultiSequenceLearning();
+           // // Instantiate the MultiSequenceLearning class
+           // MultiSequenceLearning experiment = new MultiSequenceLearning();
 
-            // Run the experiment and obtain the predictor
-            var predictor = experiment.Run(sequences);
+           // // Run the experiment and obtain the predictor
+           // var predictor = experiment.Run(sequences);
 
-            // Serialize the predictor
-            string serializedData = predictor.Serialize();
+           // // Serialize the predictor
+           // string serializedData = predictor.Serialize();
 
-            // Deserialize the predictor
-            var deserializedPredictor = HtmClassifier<string, double>.Deserialize(serializedData);
+           // // Deserialize the predictor
+           // var deserializedPredictor = HtmClassifier<string, double>.Deserialize(serializedData);
 
-            // Use the deserialized predictor for predictions or further processing
-            // Example:
-            var predictedValue = deserializedPredictor.Predict(sequences["S1"]);
-            Console.WriteLine($"Predicted value for sequence S1: {predictedValue}");
+           // // Use the deserialized predictor for predictions or further processing
+           // // Example:
+           // var predictedValue = deserializedPredictor.Predict(sequences["S1"]);
+           //Console.WriteLine($"Predicted value for sequence S1: {predictedValue}");
         }
 
 
