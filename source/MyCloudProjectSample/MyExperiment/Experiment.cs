@@ -7,10 +7,12 @@ using MyCloudProject.Common;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Entities;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -57,9 +59,7 @@ namespace MyExperiment
             //Run your experiment code here.
 
             // // Serialization check.
-
-
-            
+          
 
             LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
            htmClassifier= learnHtmClassifierForSerialization.Train();
@@ -71,6 +71,18 @@ namespace MyExperiment
             }
 
 
+            // read csv value 
+            double pdValue;
+            double[] pdValues;
+
+            var values = File.ReadAllLines(inputFile)
+                       .SelectMany(a => a.Split(';')
+                       .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
+
+            pdValues = values.ToArray();
+
+
+            RunMultiSequenceLearningExperiment(pdValues);
 
 
             //res.OutputFiles("SerialiseOutput.txt");
@@ -111,7 +123,9 @@ namespace MyExperiment
                         IExperimentResult result = await this.Run(inputFile);
 
                         //TODO. do serialization of the result.
-                        await storageProvider.UploadResultFile("outputfile.txt", null);
+                        var fileBytes = File.ReadLines("output.txt");
+
+                        await storageProvider.UploadResultFile("output.txt", null);
 
                         await storageProvider.UploadExperimentResult(result);
 
@@ -142,14 +156,15 @@ namespace MyExperiment
 
 
         #region RunMultisequnce experiment to test serialization of HTM Classifier
-        private static void RunMultiSequenceLearningExperiment()
+        private static void RunMultiSequenceLearningExperiment(double[] input)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
+            sequences.Add("S1", new List<double>(input));
 
-            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
