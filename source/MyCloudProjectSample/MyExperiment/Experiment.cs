@@ -61,14 +61,16 @@ namespace MyExperiment
             // // Serialization check.
           
 
-            LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
-           htmClassifier= learnHtmClassifierForSerialization.Train();
+           //LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
+           //htmClassifier= learnHtmClassifierForSerialization.Train();
 
 
-            using (StreamWriter sw = new StreamWriter("SerialiseOutput.txt"))
-            {
-                htmClassifier.Serialize(htmClassifier, null, sw);
-            }
+           // using (StreamWriter sw = new StreamWriter("SerialiseOutput.txt"))
+           // {
+           //     htmClassifier.Serialize(htmClassifier, null, sw);
+           // }
+
+            //remove above code because its not required after RunMultiSequenceLearningExperiment() implemented to call
 
 
             // read csv value 
@@ -79,8 +81,12 @@ namespace MyExperiment
                        .SelectMany(a => a.Split(';')
                        .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
 
+            // input double array to be passed to RunMultisequence lerningExp to the the predict method
+
             pdValues = values.ToArray();
 
+
+            // The actual lerning and predict method call of our HTM Serialize below
 
             RunMultiSequenceLearningExperiment(pdValues);
 
@@ -125,9 +131,12 @@ namespace MyExperiment
                         //TODO. do serialization of the result.
                         var fileBytes = File.ReadLines("output.txt");
 
+
+                        //uploaded the serialised output text file to the blob
                         await storageProvider.UploadResultFile("output.txt", null);
 
-                        await storageProvider.UploadExperimentResult(result);
+                       //TO DO---> Correct uploading the response accuracy of the predictor of the serialised one as well as the original one
+                       //await storageProvider.UploadExperimentResult(result);
 
                         //await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }
@@ -185,11 +194,11 @@ namespace MyExperiment
             PredictNextElement(predictor, list1);
             PredictNextElement(serializedPredictor, list1);
 
-            predictor.Reset();
-            PredictNextElement(predictor, list2);
+            //predictor.Reset();
+            //PredictNextElement(predictor, list2);
 
-            predictor.Reset();
-            PredictNextElement(predictor, list3);
+            //predictor.Reset();
+            //PredictNextElement(predictor, list3);
         }
 
         private static void PredictNextElement(Predictor predictor, double[] list)
