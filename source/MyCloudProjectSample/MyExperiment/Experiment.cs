@@ -11,6 +11,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,22 +60,51 @@ namespace MyExperiment
             //Run your experiment code here.
 
             // // Serialization check.
-          
 
-           //LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
-           //htmClassifier= learnHtmClassifierForSerialization.Train();
+            public void RunExperiment()
+            {
+                // Train HTM classifier
+                LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
+                var htmClassifier = learnHtmClassifierForSerialization.Train();
 
+                // Run multi-sequence learning experiment
+                RunMultiSequenceLearningExperiment(htmClassifier);
 
-           // using (StreamWriter sw = new StreamWriter("SerialiseOutput.txt"))
-           // {
-           //     htmClassifier.Serialize(htmClassifier, null, sw);
-           // }
+                // Read CSV values
+                ReadCSVValues("input.csv");
+            }
 
-            //remove above code because its not required after RunMultiSequenceLearningExperiment() implemented to call
+            public void RunMultiSequenceLearningExperiment(HtmClassifier htmClassifier)
+            {
+                // Implement your multi-sequence learning experiment here
+                Console.WriteLine("Running multi-sequence learning experiment...");
+                // Modification: Print the type of the HTM classifier
+                Console.WriteLine($"HTM Classifier Type: {htmClassifier.GetType().Name}");
+                // ...
+            }
 
+            public void ReadCSVValues(string filePath)
+            {
+                using (var reader = new StreamReader(filePath))
+                using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
+                {
+                    var records = csv.GetRecords<MyDataClass>();
 
-            // read csv value 
-            double pdValue;
+                    foreach (var record in records)
+                    {
+                        // Process each record as needed
+                        Console.WriteLine($"Field1: {record.Field1}, Field2: {record.Field2}");
+                    }
+                }
+            }
+        }
+
+        public class MyDataClass
+        {
+            public string Field1 { get; set; }
+            public int Field2 { get; set; }
+        }
+        double pdValue;
             double[] pdValues;
 
             var values = File.ReadAllLines(inputFile)
