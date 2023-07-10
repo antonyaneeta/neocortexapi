@@ -60,8 +60,60 @@ namespace MyExperiment
             //Run your experiment code here.
 
             // // Serialization check.
-            //takes input value from csv file to double array to pass as input to experiment.
-            double[] pdValues = ReadInputValueToExperiment(inputFile);
+
+        //    public void RunExperiment()
+        //    {
+        //        // Train HTM classifier
+        //        LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
+        //        var htmClassifier = learnHtmClassifierForSerialization.Train();
+
+        //        // Run multi-sequence learning experiment
+        //        RunMultiSequenceLearningExperiment(htmClassifier);
+
+        //        // Read CSV values
+        //        ReadCSVValues("input.csv");
+        //    }
+
+        //    public void RunMultiSequenceLearningExperiment(HtmClassifier htmClassifier)
+        //    {
+        //        // Implement your multi-sequence learning experiment here
+        //        Console.WriteLine("Running multi-sequence learning experiment...");
+        //        // Modification: Print the type of the HTM classifier
+        //        Console.WriteLine($"HTM Classifier Type: {htmClassifier.GetType().Name}");
+        //        // ...
+        //    }
+
+        //    public void ReadCSVValues(string filePath)
+        //    {
+        //        using (var reader = new StreamReader(filePath))
+        //        using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
+        //        {
+        //            var records = csv.GetRecords<MyDataClass>();
+
+        //            foreach (var record in records)
+        //            {
+        //                // Process each record as needed
+        //                Console.WriteLine($"Field1: {record.Field1}, Field2: {record.Field2}");
+        //            }
+        //        }
+        //    }
+        //}
+
+        //public class MyDataClass
+        //{
+        //    public string Field1 { get; set; }
+        //    public int Field2 { get; set; }
+        //}
+        double pdValue;
+            double[] pdValues;
+
+            var values = File.ReadAllLines(inputFile)
+                       .SelectMany(a => a.Split(';')
+                       .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
+
+            // input double array to be passed to RunMultisequence lerningExp to the the predict method
+
+            pdValues = values.ToArray();
 
 
             // The actual lerning and predict method call of our HTM Serialize below
@@ -76,20 +128,7 @@ namespace MyExperiment
             return Task.FromResult<IExperimentResult>(res); // TODO...
         }
 
-        private static double[] ReadInputValueToExperiment(string inputFile)
-        {
-            double pdValue;
-            double[] pdValues;
 
-            var values = File.ReadAllLines(inputFile)
-                       .SelectMany(a => a.Split(';')
-                       .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
-
-            // input double array to be passed to RunMultisequence learning Exp to the the predict method
-
-            pdValues = values.ToArray();
-            return pdValues;
-        }
 
 
         /// <inheritdoc/>
@@ -192,6 +231,21 @@ namespace MyExperiment
             //PredictNextElement(predictor, list3);
         }
 
+        private double[] ReadCsvValues(string filePath)
+        {
+            double pdValue;
+            double[] pdValues;
+
+            var values = File.ReadAllLines(filePath)
+                .SelectMany(a => a.Split(';')
+                .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
+
+            pdValues = values.ToArray();
+
+            return pdValues;
+        }
+
+
         private static void PredictNextElement(Predictor predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
@@ -218,54 +272,6 @@ namespace MyExperiment
             Debug.WriteLine("------------------------------");
         }
     }
-    #endregion
-
-
-    #region
-
-//    public void RunExperiment()
-//    {
-//        // Train HTM classifier
-//        LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
-//        var htmClassifier = learnHtmClassifierForSerialization.Train();
-
-//        // Run multi-sequence learning experiment
-//        RunMultiSequenceLearningExperiment(htmClassifier);
-
-//        // Read CSV values
-//        ReadCSVValues("input.csv");
-//    }
-
-//    public void RunMultiSequenceLearningExperiment(HtmClassifier htmClassifier)
-//    {
-//        // Implement your multi-sequence learning experiment here
-//        Console.WriteLine("Running multi-sequence learning experiment...");
-//        // Modification: Print the type of the HTM classifier
-//        Console.WriteLine($"HTM Classifier Type: {htmClassifier.GetType().Name}");
-//        // ...
-//    }
-
-//    public void ReadCSVValues(string filePath)
-//    {
-//        using (var reader = new StreamReader(filePath))
-//        using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-//        {
-//            var records = csv.GetRecords<MyDataClass>();
-
-//            foreach (var record in records)
-//            {
-//                // Process each record as needed
-//                Console.WriteLine($"Field1: {record.Field1}, Field2: {record.Field2}");
-//            }
-//        }
-//    }
-//}
-
-//public class MyDataClass
-//{
-//    public string Field1 { get; set; }
-//    public int Field2 { get; set; }
-//}
     #endregion
 
 }
