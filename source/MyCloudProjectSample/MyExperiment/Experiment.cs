@@ -61,57 +61,14 @@ namespace MyExperiment
 
             // // Serialization check.
 
-        //    public void RunExperiment()
-        //    {
-        //        // Train HTM classifier
-        //        LearnHtmClassifierForSerialization learnHtmClassifierForSerialization = new LearnHtmClassifierForSerialization();
-        //        var htmClassifier = learnHtmClassifierForSerialization.Train();
-
-        //        // Run multi-sequence learning experiment
-        //        RunMultiSequenceLearningExperiment(htmClassifier);
-
-        //        // Read CSV values
-        //        ReadCSVValues("input.csv");
-        //    }
-
-        //    public void RunMultiSequenceLearningExperiment(HtmClassifier htmClassifier)
-        //    {
-        //        // Implement your multi-sequence learning experiment here
-        //        Console.WriteLine("Running multi-sequence learning experiment...");
-        //        // Modification: Print the type of the HTM classifier
-        //        Console.WriteLine($"HTM Classifier Type: {htmClassifier.GetType().Name}");
-        //        // ...
-        //    }
-
-        //    public void ReadCSVValues(string filePath)
-        //    {
-        //        using (var reader = new StreamReader(filePath))
-        //        using (var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.InvariantCulture)))
-        //        {
-        //            var records = csv.GetRecords<MyDataClass>();
-
-        //            foreach (var record in records)
-        //            {
-        //                // Process each record as needed
-        //                Console.WriteLine($"Field1: {record.Field1}, Field2: {record.Field2}");
-        //            }
-        //        }
-        //    }
-        //}
-
-        //public class MyDataClass
-        //{
-        //    public string Field1 { get; set; }
-        //    public int Field2 { get; set; }
-        //}
-        double pdValue;
+            double pdValue;
             double[] pdValues;
 
             var values = File.ReadAllLines(inputFile)
                        .SelectMany(a => a.Split(';')
                        .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
 
-            // input double array to be passed to RunMultisequence lerningExp to the the predict method
+            // input double array to be passed to RunMultisequence learningExp to the the predict method
 
             pdValues = values.ToArray();
 
@@ -187,12 +144,6 @@ namespace MyExperiment
         }
 
 
-        #region Private Methods
-
-
-        #endregion
-
-
 
         #region RunMultisequnce experiment to test serialization of HTM Classifier
         private static void RunMultiSequenceLearningExperiment(double[] input)
@@ -201,9 +152,11 @@ namespace MyExperiment
 
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
-            sequences.Add("S1", new List<double>(input));
+            
+            // trying with input from azure as one sequnce value.
+            //sequences.Add("S1", new List<double>(input));
 
-            //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
+            sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
             //
@@ -221,8 +174,8 @@ namespace MyExperiment
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
             predictor.Reset();
-            PredictNextElement(predictor, list1);
-            PredictNextElement(serializedPredictor, list1);
+            PredictNextElement(predictor, list1,serializedPredictor);
+          //  PredictNextElement(serializedPredictor, list1);
 
             //predictor.Reset();
             //PredictNextElement(predictor, list2);
@@ -245,14 +198,19 @@ namespace MyExperiment
             return pdValues;
         }
 
+        private static void PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
 
-        private static void PredictNextElement(Predictor predictor, double[] list)
         {
             Debug.WriteLine("------------------------------");
 
             foreach (var item in list)
             {
                 var res = predictor.Predict(item);
+                var res1 = serPredictor.Predict(item);
+
+
+                Console.WriteLine($"Comparing the Input predicted from predictor,  {res[0].PredictedInput} : and from serializedPredictor: {res1[0].PredictedInput}");
+           
 
                 if (res.Count > 0)
                 {
