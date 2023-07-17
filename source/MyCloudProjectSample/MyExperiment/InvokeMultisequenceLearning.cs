@@ -81,6 +81,17 @@ namespace MyExperiment
                     var tokens2 = res.First().PredictedInput.Split('-');
                     Console.WriteLine($"From actualPredictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
                 }
+                if (res1.Count > 0)
+                {
+                    foreach (var pred1 in res1)
+                    {
+                        Console.WriteLine($"{pred1.PredictedInput} - {pred1.Similarity}");
+                    }
+
+                    var tokens = res1.First().PredictedInput.Split('_');
+                    var tokens2 = res1.First().PredictedInput.Split('-');
+                    Console.WriteLine($"\"SerializedPredictor-->  Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                }
                 else
                     Debug.WriteLine("Nothing predicted :(");
             }
