@@ -42,15 +42,20 @@ namespace MyExperiment
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
             predictor.Reset();
-            //serializedPredictor.Reset();
+            serializedPredictor.Reset();
             PredictNextElement(predictor, list1, serializedPredictor);
             //  PredictNextElement(serializedPredictor, list1);
 
-            //predictor.Reset();
+            predictor.Reset();
+            serializedPredictor.Reset();
             //PredictNextElement(predictor, list2);
+            PredictNextElement(predictor, list2, serializedPredictor);
 
-            //predictor.Reset();
+
+            predictor.Reset();
+            serializedPredictor.Reset();
             //PredictNextElement(predictor, list3);
+            PredictNextElement(predictor, list3, serializedPredictor);
 
         }
 
@@ -65,11 +70,20 @@ namespace MyExperiment
                 var res = predictor.Predict(item);
                 var res1 = serPredictor.Predict(item);
 
-                if (res.Count > 0 && res1.Count >0)
+                //try to get siliary of each elemnt of two predictions
+                //for (int k = 0; k < res.Count; k++)
+                //{
+
+                //}
+
+                    if (res.Count > 0 && res1.Count >0)
                 {
                     Console.WriteLine($"Comparing the Input predicted from predictor,  {res[0].PredictedInput} : and from serializedPredictor: {res1[0].PredictedInput}");
                 }
-
+                else
+                {
+                    Console.WriteLine("count was not 0000 ");
+                }
                 if (res.Count > 0)
                 {
                     foreach (var pred in res)
