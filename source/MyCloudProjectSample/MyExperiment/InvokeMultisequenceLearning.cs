@@ -1,4 +1,5 @@
 ﻿using NeoCortexApi;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,7 +38,8 @@ namespace MyExperiment
             // These list are used to see how the prediction works.
             // Predictor is traversing the list element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
-            var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+           // var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
+            var list1 = new double[] { 2.0, 5.0 };
             var list2 = new double[] { 2.0, 3.0, 4.0 };
             var list3 = new double[] { 8.0, 1.0, 2.0 };
 
@@ -46,16 +48,16 @@ namespace MyExperiment
             PredictNextElement(predictor, list1, serializedPredictor);
             //  PredictNextElement(serializedPredictor, list1);
 
-            predictor.Reset();
-            serializedPredictor.Reset();
-            //PredictNextElement(predictor, list2);
-            PredictNextElement(predictor, list2, serializedPredictor);
+            //predictor.Reset();
+            //serializedPredictor.Reset();
+            ////PredictNextElement(predictor, list2);
+            //PredictNextElement(predictor, list2, serializedPredictor);
 
 
-            predictor.Reset();
-            serializedPredictor.Reset();
-            //PredictNextElement(predictor, list3);
-            PredictNextElement(predictor, list3, serializedPredictor);
+            //predictor.Reset();
+            //serializedPredictor.Reset();
+            ////PredictNextElement(predictor, list3);
+            //PredictNextElement(predictor, list3, serializedPredictor);
 
         }
 
@@ -64,9 +66,14 @@ namespace MyExperiment
 
         {
             Debug.WriteLine("------------------------------");
-
+            List<KeyValuePair<String, String>> listofPrediction = new List<KeyValuePair<String, String>>();
             foreach (var item in list)
             {
+                //Checking prediction for next predicted element for each item
+                Console.WriteLine($" item name : {item}");
+                
+
+
                 var res = predictor.Predict(item);
                 var res1 = serPredictor.Predict(item);
 
@@ -94,6 +101,8 @@ namespace MyExperiment
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
                     Console.WriteLine($"From actualPredictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    listofPrediction.
+                        Add(new KeyValuePair<String, String>($"item name : {item} : for normal predictor " + tokens[0], tokens2.Last()));
                 }
                 if (res1.Count > 0)
                 {
@@ -105,9 +114,14 @@ namespace MyExperiment
                     var tokens = res1.First().PredictedInput.Split('_');
                     var tokens2 = res1.First().PredictedInput.Split('-');
                     Console.WriteLine($"\"SerializedPredictor-->  Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    listofPrediction.Add(new KeyValuePair<String, String>($"item name : {item} : for serialized predictor " + tokens[0], tokens2.Last()));
                 }
                 else
                     Debug.WriteLine("Nothing predicted :(");
+            }
+            foreach (KeyValuePair<string, string> kvp in listofPrediction)
+            {
+                Console.WriteLine(string.Format("Key: {0} Value: {1}", kvp.Key, kvp.Value));
             }
 
             Debug.WriteLine("------------------------------");
