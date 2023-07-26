@@ -48,16 +48,16 @@ namespace MyExperiment
             PredictNextElement(predictor, list1, serializedPredictor);
             //  PredictNextElement(serializedPredictor, list1);
 
-            //predictor.Reset();
-            //serializedPredictor.Reset();
-            ////PredictNextElement(predictor, list2);
-            //PredictNextElement(predictor, list2, serializedPredictor);
+            predictor.Reset();
+            serializedPredictor.Reset();
+            //PredictNextElement(predictor, list2);
+            PredictNextElement(predictor, list2, serializedPredictor);
 
 
-            //predictor.Reset();
-            //serializedPredictor.Reset();
-            ////PredictNextElement(predictor, list3);
-            //PredictNextElement(predictor, list3, serializedPredictor);
+            predictor.Reset();
+            serializedPredictor.Reset();
+            //PredictNextElement(predictor, list3);
+            PredictNextElement(predictor, list3, serializedPredictor);
 
         }
 
