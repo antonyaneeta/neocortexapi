@@ -22,7 +22,7 @@ namespace MyExperiment
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
-            // Create a new sequence "S1" using the input data.
+            // Create a new sequence "S1" using the azure data.
             sequences.Add("S1", new List<double>(input));
 
 
@@ -47,18 +47,18 @@ namespace MyExperiment
             predictor.Reset();
             serializedPredictor.Reset();
             PredictNextElement(predictor, list1, serializedPredictor);
-            //  PredictNextElement(serializedPredictor, list1);
+             PredictNextElement(serializedPredictor, list1);
 
-            predictor.Reset();
-            serializedPredictor.Reset();
+            //predictor.Reset();
+            //serializedPredictor.Reset();
             //PredictNextElement(predictor, list2);
-            PredictNextElement(predictor, list2, serializedPredictor);
+            //PredictNextElement(predictor, list2, serializedPredictor);
 
 
-            predictor.Reset();
-            serializedPredictor.Reset();
+            //predictor.Reset();
+            //serializedPredictor.Reset();
             //PredictNextElement(predictor, list3);
-            PredictNextElement(predictor, list3, serializedPredictor);
+            //PredictNextElement(predictor, list3, serializedPredictor);
 
         }
 
