@@ -47,7 +47,7 @@ namespace MyExperiment
             predictor.Reset();
             serializedPredictor.Reset();
             PredictNextElement(predictor, list1, serializedPredictor);
-             PredictNextElement(serializedPredictor, list1);
+            PredictNextElement(serializedPredictor, list1);
 
             //predictor.Reset();
             //serializedPredictor.Reset();
@@ -88,9 +88,7 @@ namespace MyExperiment
                 {
                     Console.WriteLine($"Comparing the Input predicted from predictor,  {res[0].PredictedInput} : and from serializedPredictor: {res1[0].PredictedInput}");
                 }
-                else
-                {
-                    Console.WriteLine("count was not 0000 ");
+                
                 }
                 if (res.Count > 0)
                 {
