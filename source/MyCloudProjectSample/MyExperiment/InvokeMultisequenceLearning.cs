@@ -68,11 +68,15 @@ namespace MyExperiment
         {
             Debug.WriteLine("------------------------------");
             List<KeyValuePair<String, String>> listofPrediction = new List<KeyValuePair<String, String>>();
+            int matchCount = 0;
+            int totalCount = 0;
+            int matchCount1 = 0;
+            int totalCount1 = 0;
             foreach (var item in list)
             {
                 //Checking prediction for next predicted element for each item
                 Console.WriteLine($" item name : {item}");
-                
+
 
 
                 var res = predictor.Predict(item);
@@ -84,12 +88,12 @@ namespace MyExperiment
 
                 //}
 
-                    if (res.Count > 0 && res1.Count >0)
+                if (res.Count > 0 && res1.Count > 0)
                 {
                     Console.WriteLine($"Comparing the Input predicted from predictor,  {res[0].PredictedInput} : and from serializedPredictor: {res1[0].PredictedInput}");
                 }
-                
-                
+
+
                 if (res.Count > 0)
                 {
                     foreach (var pred in res)
@@ -97,32 +101,58 @@ namespace MyExperiment
                         Console.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
 
+
+                    var similarity = res.First().Similarity;
+
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
                     Console.WriteLine($"From actualPredictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+
+                    matchCount += 1;
+
                     listofPrediction.
                         Add(new KeyValuePair<String, String>($"item name : {item} : for normal predictor " + tokens[0], tokens2.Last()));
                 }
+                else
+                    Console.WriteLine("Nothing predicted :(");
+                    totalCount += 1;
+                
+
                 if (res1.Count > 0)
                 {
                     foreach (var pred1 in res1)
                     {
                         Console.WriteLine($"{pred1.PredictedInput} - {pred1.Similarity}");
                     }
+                    var similarity1 = res.First().Similarity;
 
                     var tokens = res1.First().PredictedInput.Split('_');
                     var tokens2 = res1.First().PredictedInput.Split('-');
                     Console.WriteLine($"\"SerializedPredictor-->  Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
                     listofPrediction.Add(new KeyValuePair<String, String>($"item name : {item} : for serialized predictor " + tokens[0], tokens2.Last()));
+
+                    matchCount1 += 1;
                 }
                 else
-                    Debug.WriteLine("Nothing predicted :(");
+                    Console.WriteLine("Nothing predicted :(");
+                    totalCount1 += 1;
+                
             }
             foreach (KeyValuePair<string, string> kvp in listofPrediction)
             {
                 Console.WriteLine(string.Format("Key: {0} Value: {1}", kvp.Key, kvp.Value));
             }
 
+            // Calculate predictorAccuracy
+            var predictorAccuracy = (matchCount * 100) / totalCount;
+            var serialisedPredAccuracy = (matchCount1 * 100) / totalCount1;
+            // Create a Multisequence object and set predictorAccuracy
+
+
+
+            Console.WriteLine("------------predictorAccuracy------------------"+ predictorAccuracy);
+            Console.WriteLine("------------serialisedpredictorAccuracy------------------"+ serialisedPredAccuracy);
+            Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
             Debug.WriteLine("------------------------------");
         }
     }
