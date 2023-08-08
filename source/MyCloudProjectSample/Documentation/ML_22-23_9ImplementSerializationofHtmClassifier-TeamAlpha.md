@@ -1,4 +1,11 @@
-# Title of your SE Project - Azure Cloud Implementation
+# ML2223-9 Implement Serialization of HtmClassifier -Team Alpha - Azure Cloud Implementation
+
+The Serialization of HTMClassifier is implemented with this Project.
+The Newly intorduced Serilaize Deserialize method works towards the goal of the Project .
+The Methods are unit tested and Documneted in https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/Implement%20Serialisation%20of%20HTMClassifier.pdf   
+
+
+With  and aim to make the Project availible running in Azure cloud as a Docker image running in Azure the folloing steps are done.
 
 Use this file to describe your experiment.
 This file is the whole documentation you need.
@@ -7,16 +14,27 @@ Do not paste code-snippets here as image. Use rather markdoown (MD) code documen
 For example:
 
 ~~~csharp
-public voiud MyFunction()
+private static void PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
 {
-    Debug.WriteLine("this is a code sample");
+    
+                    var similarity = res.First().Similarity;
+
+                    var tokens = res.First().PredictedInput.Split('_');
+                    var tokens2 = res.First().PredictedInput.Split('-');
+                    Console.WriteLine($"From actualPredictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+
+                    // Calculate predictorAccuracy
+            var predictorAccuracy = (matchCount * 100) / totalCount;
+            var serialisedPredAccuracy = (matchCount1 * 100) / totalCount1;
+
 }
 ~~~
 
 
 ## What is your experiment about
 
-Describe here what your experiment is doing. Provide a reference to your SE project documentation (PDF)*)
+Describe here what your experiment is doing. Provide a reference to your SE project documentation (PDF)*) - https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/Implement%20Serialisation%20of%20HTMClassifier.pdf   
+Readme.md file availiiable about project  here :- https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/README.md   
 
 1. What is the **input**?
 
