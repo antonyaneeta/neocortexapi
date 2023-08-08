@@ -316,7 +316,7 @@ namespace NeoCortexApiSample
             using (StreamReader sr = new StreamReader("output.txt"))
             {
                 HtmClassifier<string, ComputeCycle> serClassifier = new HtmClassifier<string, ComputeCycle>();
-                serClassifier=serClassifier.Deserialize(sr);
+                serClassifier=cls.Deserialize(sr);
 
                 serializedPredictor = new Predictor(layer1, mem, serClassifier);
             }
