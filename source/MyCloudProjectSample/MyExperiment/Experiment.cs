@@ -109,6 +109,7 @@ namespace MyExperiment
             
             while (cancelToken.IsCancellationRequested == false)
             {
+                
                 QueueMessage message = await queueClient.ReceiveMessageAsync();
 
                 if (message != null)
