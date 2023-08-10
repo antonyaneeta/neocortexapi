@@ -66,7 +66,7 @@ namespace MyExperiment
 
             ExperimentResult res = new ExperimentResult("damir", "123")
             {
-                //Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
+                Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
 
                 Accuracy = (float)0.5,
             };

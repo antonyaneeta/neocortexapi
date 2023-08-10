@@ -135,7 +135,7 @@ namespace MyExperiment
                         await storageProvider.UploadResultFile("output.txt", null);
 
                        //TO DO---> Correct uploading the response accuracy of the predictor of the serialised one as well as the original one
-                       //await storageProvider.UploadExperimentResult(result);
+                       await storageProvider.UploadExperimentResult(result);
 
                         //await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }

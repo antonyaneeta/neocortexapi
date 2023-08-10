@@ -1,4 +1,5 @@
-﻿using NeoCortexApi;
+﻿using Microsoft.Azure.Amqp.Framing;
+using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Encoders;
 using NeoCortexApi.Entities;
@@ -89,6 +90,8 @@ namespace MyExperiment
             bool isInStableState = false;
 
             HtmClassifier<string, ComputeCycle> cls = new HtmClassifier<string, ComputeCycle>();
+
+            HtmClassifier<string, ComputeCycle> serClassifier = new HtmClassifier<string, ComputeCycle>();
 
             var numUniqueInputs = GetNumberOfInputs(sequences);
 
@@ -314,11 +317,11 @@ namespace MyExperiment
 
             using (StreamReader sr = new StreamReader("output.txt"))
             {
-                HtmClassifier<string, ComputeCycle> serClassifier = new HtmClassifier<string, ComputeCycle>();
-                serClassifier = serClassifier.Deserialize(sr);
-
-                serializedPredictor = new Predictor(layer1, mem, serClassifier);
+           
+                serClassifier = cls.Deserialize(sr);
+                
             }
+            serializedPredictor = new Predictor(layer1, mem, serClassifier);
             return new Predictor(layer1, mem, cls);
         }
 
