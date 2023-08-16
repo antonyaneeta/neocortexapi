@@ -3,6 +3,7 @@ using Azure.Storage.Queues.Models;
 using HtmClassifierUnitTest;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using MyCloudProject.Common;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
@@ -36,14 +37,14 @@ namespace MyExperiment
         private Dictionary<string, List<double>> sequences;
 
         //
-        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
+        public Experiment(IOptions<MyConfig> configOptions, IStorageProvider storageProvider, ILogger log)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
 
-            config = new MyConfig();
-            configSection.Bind(config);
+            config = configOptions.Value;
         }
+
 
         public Task<IExperimentResult> Run(string inputFile)
         {
