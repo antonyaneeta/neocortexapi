@@ -25,7 +25,10 @@ namespace MyExperiment
 
         public async Task<string> DownloadInputFile(string fileName)
         {
-            BlobContainerClient container = new BlobContainerClient(this.config.StorageConnectionString, "inputblobcontainer");
+            //BlobContainerClient container = new BlobContainerClient(this.config.StorageConnectionString, "inputblobcontainer");
+            BlobServiceClient blobServiceClient = new BlobServiceClient(this.config.StorageConnectionString);
+            BlobContainerClient container = blobServiceClient.GetBlobContainerClient("inputblobcontainer");
+
             await container.CreateIfNotExistsAsync();
 
             try
