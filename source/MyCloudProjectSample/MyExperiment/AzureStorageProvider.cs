@@ -63,9 +63,31 @@ namespace MyExperiment
 
         public async Task UploadExperimentResult(IExperimentResult result)
         {
-            var client = new TableClient(this.config.StorageConnectionString, this.config.ResultTable);
 
-            await client.CreateIfNotExistsAsync();
+
+
+            // New instance of the TableClient class
+            TableServiceClient tableServiceClient = new TableServiceClient(this.config.StorageConnectionString);
+
+            // New instance of TableClient class referencing the server-side table
+            TableClient tableClient = tableServiceClient.GetTableClient(
+                tableName: this.config.ResultTable
+            );
+
+            await tableClient.CreateIfNotExistsAsync();
+
+
+            //var client = new TableClient(this.config.StorageConnectionString, this.config.ResultTable);
+
+            //await client.CreateIfNotExistsAsync();
+
+
+            Random rnd = new Random();
+
+            int randomnumber = rnd.Next(0, 1000);
+            string tableName = this.config.ResultTable + "table";
+            string partitionKey = randomnumber.ToString();
+            int suffixNum = 1;
 
             ExperimentResult res = new ExperimentResult("damir", "123")
             {
@@ -75,7 +97,7 @@ namespace MyExperiment
             };
 
 
-            await client.UpsertEntityAsync((ExperimentResult)result);
+            await tableClient.UpsertEntityAsync((ExperimentResult)result);
 
         }
 
