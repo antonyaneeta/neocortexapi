@@ -44,7 +44,7 @@ namespace MyCloudProject
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
 
             //first
-            Experiment experiment = new Experiment((Microsoft.Extensions.Options.IOptions<MyConfig>)cfgSec, storageProvider, logger/* put some additional config here */);
+            Experiment experiment = new Experiment(cfgSec, storageProvider, logger/* put some additional config here */);
             
             await experiment.RunQueueListener(tokeSrc.Token);
 

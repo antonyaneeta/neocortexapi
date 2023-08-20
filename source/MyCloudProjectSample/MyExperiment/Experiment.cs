@@ -37,12 +37,13 @@ namespace MyExperiment
         private Dictionary<string, List<double>> sequences;
 
         //
-        public Experiment(IOptions<MyConfig> configOptions, IStorageProvider storageProvider, ILogger log)
+        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
 
-            config = configOptions.Value;
+            config = new MyConfig();
+            configSection.Bind(config);
         }
 
 

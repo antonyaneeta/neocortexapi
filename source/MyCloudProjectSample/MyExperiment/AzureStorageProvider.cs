@@ -2,6 +2,7 @@
 using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using LearningFoundation;
 using Microsoft.Extensions.Configuration;
 using MyCloudProject.Common;
 using System;
@@ -61,7 +62,7 @@ namespace MyExperiment
             // throw new NotImplementedException();
         }
 
-        public async Task UploadExperimentResult(IExperimentResult result)
+        public async Task UploadExperimentResult(IExperimentResult results )
         {
 
 
@@ -71,7 +72,7 @@ namespace MyExperiment
 
             // New instance of TableClient class referencing the server-side table
             TableClient tableClient = tableServiceClient.GetTableClient(
-                tableName: this.config.ResultTable
+                tableName: this.config.ResultTable+"cloudResult-table"
             );
 
             await tableClient.CreateIfNotExistsAsync();
@@ -89,6 +90,32 @@ namespace MyExperiment
             string partitionKey = randomnumber.ToString();
             int suffixNum = 1;
 
+
+            // Create an instance of the strongly-typed entity and set their properties.
+
+            for (int index = 0; index < 1; index++)
+            {
+                string rowKey = "Experiment1" + "_" + suffixNum.ToString();
+
+                var stronglyTypedEntity = new ExperimentResult(partitionKey, rowKey)
+                {
+                    PartitionKey = partitionKey,
+                    RowKey = rowKey,
+                    ExperimentId = "Experiment1",
+                    StartTimeUtc = results.StartTimeUtc,
+                    EndTimeUtc = results.EndTimeUtc,
+                    //DurationSec = results[index].DurationSec,
+                };
+
+
+                // Add the newly created entity.
+                await tableClient.AddEntityAsync(stronglyTypedEntity);
+                suffixNum++;
+
+            }
+            //thrownew NotImplementedExcepton();
+            Console.WriteLine("Uploaded to Table Storage successfully");
+
             ExperimentResult res = new ExperimentResult("damir", "123")
             {
                 Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
@@ -97,7 +124,7 @@ namespace MyExperiment
             };
 
 
-            await tableClient.UpsertEntityAsync((ExperimentResult)result);
+            //await tableClient.UpsertEntityAsync((ExperimentResult)results);
 
         }
 
