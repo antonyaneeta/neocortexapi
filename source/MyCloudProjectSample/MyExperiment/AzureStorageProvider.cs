@@ -67,7 +67,7 @@ namespace MyExperiment
         {
 
 
-
+            try { 
             // New instance of the TableClient class
             TableServiceClient tableServiceClient = new TableServiceClient(this.config.StorageConnectionString);
 
@@ -119,8 +119,12 @@ namespace MyExperiment
             
             Console.WriteLine("Uploaded to Table Storage successfully");
 
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.ToString());
+            }
 
-            
 
             //ExperimentResult res = new ExperimentResult("damir", "123")
             //{
