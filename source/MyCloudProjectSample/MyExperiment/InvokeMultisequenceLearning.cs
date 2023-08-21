@@ -15,7 +15,7 @@ namespace MyExperiment
         /// RunMultisequence experiment to test serialization of HTM Classifier
         /// </summary>
         /// <param name="input"></param>
-        public static void RunMultiSequenceLearningExperiment(double[] input)
+        public static int RunMultiSequenceLearningExperiment(double[] input)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
@@ -46,7 +46,7 @@ namespace MyExperiment
 
             predictor.Reset();
             serializedPredictor.Reset();
-            PredictNextElement(predictor, list1, serializedPredictor);
+            int v = PredictNextElement(predictor, list1, serializedPredictor);
             //PredictNextElement(serializedPredictor, list1);
 
             //predictor.Reset();
@@ -60,10 +60,11 @@ namespace MyExperiment
             //PredictNextElement(predictor, list3);
             //PredictNextElement(predictor, list3, serializedPredictor);
 
+            return v;
         }
 
         #region the PredictNext element to compare if both the serialized Predictor and normal Predictor has same prediction.
-        private static void PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
+        private static int PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
 
         {
             Debug.WriteLine("------------------------------");
@@ -154,6 +155,7 @@ namespace MyExperiment
             Console.WriteLine("------------serialisedpredictorAccuracy------------------"+ serialisedPredAccuracy);
             Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
             Debug.WriteLine("------------------------------");
+            return serialisedPredAccuracy;
         }
     }
     #endregion

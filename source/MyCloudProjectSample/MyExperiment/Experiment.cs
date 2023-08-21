@@ -68,14 +68,14 @@ namespace MyExperiment
             
             // input double array to be passed to RunMultisequence learningExp to the the predict method
 
-            pdValues = ReadCsvValues(inputFile);         
+            pdValues = ReadCsvValues(inputFile);
 
 
             // The actual learning and predict method call of our HTM Serialize below
 
-            InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
+            int v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
 
-
+            res.Accuracy = v;
             //res.OutputFiles("SerialiseOutput.txt");
 
 

@@ -5,6 +5,7 @@ using Azure.Storage.Blobs.Models;
 using LearningFoundation;
 using Microsoft.Extensions.Configuration;
 using MyCloudProject.Common;
+using Org.BouncyCastle.Asn1.Tsp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -72,7 +73,7 @@ namespace MyExperiment
 
             // New instance of TableClient class referencing the server-side table
             TableClient tableClient = tableServiceClient.GetTableClient(
-                tableName: this.config.ResultTable+"cloudResult-table"
+                tableName: this.config.ResultTable
             );
 
             await tableClient.CreateIfNotExistsAsync();
@@ -95,7 +96,7 @@ namespace MyExperiment
 
             for (int index = 0; index < 1; index++)
             {
-                string rowKey = "Experiment1" + "_" + suffixNum.ToString();
+                string rowKey = "Experiment" + "_" + suffixNum.ToString();
 
                 var stronglyTypedEntity = new ExperimentResult(partitionKey, rowKey)
                 {
@@ -104,6 +105,7 @@ namespace MyExperiment
                     ExperimentId = "Experiment1",
                     StartTimeUtc = results.StartTimeUtc,
                     EndTimeUtc = results.EndTimeUtc,
+                  // Accuracy= 
                     //DurationSec = results[index].DurationSec,
                 };
 
@@ -113,8 +115,12 @@ namespace MyExperiment
                 suffixNum++;
 
             }
-            ////thrownew NotImplementedExcepton();
-            //Console.WriteLine("Uploaded to Table Storage successfully");
+            //thrownew NotImplementedExcepton();
+            
+            Console.WriteLine("Uploaded to Table Storage successfully");
+
+
+            
 
             //ExperimentResult res = new ExperimentResult("damir", "123")
             //{
