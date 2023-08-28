@@ -73,7 +73,7 @@ namespace MyExperiment
 
             // The actual learning and predict method call of our HTM Serialize below
 
-            int v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
+            var v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
 
             //Get List of results for multiple sequence annd loop as result to azure table result
             //var resultArr = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
@@ -101,17 +101,20 @@ namespace MyExperiment
         }
 
 
-        private double[] ReadCsvValues(string filePath)
+        private List<double[]> ReadCsvValues(string filePath)
         {
             double pdValue;
-            double[] pdValues;
-
-            var values = File.ReadAllLines(filePath)
+            List <double[]> pdValues = new List<double[]>();
+            List<string> list = File.ReadAllLines(filePath).ToList();
+            foreach (string fileListLine in list)
+            {
+                var values = File.ReadAllLines(fileListLine)
                 .SelectMany(a => a.Split(';')
                 .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
 
-            pdValues = values.ToArray();
+                pdValues.Add(values.ToArray());
 
+            }
             return pdValues;
         }
 
