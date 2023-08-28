@@ -50,7 +50,7 @@ namespace MyExperiment
 
             predictor.Reset();
             serializedPredictor.Reset();
-            int v = PredictNextElement(predictor, list1, serializedPredictor);
+            Tuple<List<KeyValuePair<string, string>>, int> tuple = PredictNextElement(predictor, list1, serializedPredictor);
             //PredictNextElement(serializedPredictor, list1);
 
             //predictor.Reset();
@@ -63,7 +63,7 @@ namespace MyExperiment
             //serializedPredictor.Reset();
             //PredictNextElement(predictor, list3);
             //PredictNextElement(predictor, list3, serializedPredictor);
-
+            var v=tuple.Item2;
             return v;
         }
 
@@ -75,7 +75,7 @@ namespace MyExperiment
         /// <param name="list"></param>
         /// <param name="serPredictor"></param>
         /// <returns></returns>
-        private static int PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
+        private static Tuple<List<KeyValuePair<String, String>>,int> PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
 
         {
             Debug.WriteLine("------------------------------");
@@ -126,7 +126,7 @@ namespace MyExperiment
                         Add(new KeyValuePair<String, String>($"item name : {item} : for normal predictor " + tokens[0], tokens2.Last()));
                 }
                 else
-                    Console.WriteLine("Nothing predicted for normal preditoee :(");
+                    Console.WriteLine("Nothing predicted for normal predictor :(");
                     totalCount += 1;
                 
 
@@ -146,7 +146,7 @@ namespace MyExperiment
                     matchCount1 += 1;
                 }
                 else
-                    Console.WriteLine("Nothing predicted for serialized peredictoer  :(");
+                    Console.WriteLine("Nothing predicted for serialized predictor  :(");
                     totalCount1 += 1;
                 
             }
@@ -166,7 +166,7 @@ namespace MyExperiment
             Console.WriteLine("------------serialisedpredictorAccuracy------------------"+ serialisedPredAccuracy);
             Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
             Debug.WriteLine("------------------------------");
-            return serialisedPredAccuracy;
+            return Tuple.Create(listofPrediction,serialisedPredAccuracy);
         }
     }
     #endregion
