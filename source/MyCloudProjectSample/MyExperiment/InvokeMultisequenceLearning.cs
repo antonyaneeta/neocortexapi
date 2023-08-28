@@ -64,6 +64,13 @@ namespace MyExperiment
         }
 
         #region the PredictNext element to compare if both the serialized Predictor and normal Predictor has same prediction.
+        /// <summary>
+        /// This is now returning the serialized Predictors accuracy in predicting the next element correct as normal Predictor
+        /// </summary>
+        /// <param name="predictor"></param>
+        /// <param name="list"></param>
+        /// <param name="serPredictor"></param>
+        /// <returns></returns>
         private static int PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
 
         {

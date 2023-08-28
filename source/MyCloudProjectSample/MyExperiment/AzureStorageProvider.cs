@@ -105,7 +105,7 @@ namespace MyExperiment
                     ExperimentId = "Experiment1",
                     StartTimeUtc = results.StartTimeUtc,
                     EndTimeUtc = results.EndTimeUtc,
-                  // Accuracy= 
+                   
                     //DurationSec = results[index].DurationSec,
                 };
 

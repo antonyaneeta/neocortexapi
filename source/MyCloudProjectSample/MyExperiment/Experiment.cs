@@ -75,7 +75,24 @@ namespace MyExperiment
 
             int v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
 
-            res.Accuracy = v;
+            //Get List of results for multiple sequence annd loop as result to azure table result
+            //var resultArr = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
+            //foreach (var item in resultArr)
+            //{
+            //    double accuracy = item.accuracy;
+            //    string nextElem = item.nextElement;
+            //    res.Accuracy = accuracy;
+            //    res.nextElement = nextElem;
+            //    res.Name = this.expReq.Name;
+            //    res.ExperimentId = this.expReq.ExperimentId;
+            //    res.Description = this.expReq.Description;
+            //    res.testFileUrl = this.expReq.testFile;
+            //    res.InputSequenceFileUrl = this.expReq.InputFile;
+            //    res.Timestamp = DateTime.Now;
+            //}
+
+            float accuracy = v;
+            res.Accuracy = (float)accuracy;
             //res.OutputFiles("SerialiseOutput.txt");
 
 
