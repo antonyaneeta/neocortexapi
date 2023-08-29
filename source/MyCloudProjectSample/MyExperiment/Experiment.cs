@@ -64,7 +64,7 @@ namespace MyExperiment
             // // Serialization check.
 
             // read csv file for input sequnce to be passed to experiment
-            double[] pdValues;
+            List<double[]> pdValues;
             
             // input double array to be passed to RunMultisequence learningExp to the the predict method
 
@@ -106,11 +106,10 @@ namespace MyExperiment
             double pdValue;
             List <double[]> pdValues = new List<double[]>();
             List<string> list = File.ReadAllLines(filePath).ToList();
-            foreach (string fileListLine in list)
+            foreach (var fileListLine in list)
             {
-                var values = File.ReadAllLines(fileListLine)
-                .SelectMany(a => a.Split(';')
-                .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0));
+                var values = fileListLine.Split(';')
+                .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0);
 
                 pdValues.Add(values.ToArray());
 
