@@ -37,8 +37,15 @@ Describe here what your experiment is doing. Provide a reference to your SE proj
 Readme.md file availiiable about project  here :- https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/README.md   
 
 1. What is the **input**?
+The input for Multisequnce learnign experiment is a csv file containing the sequnce with which we indent to train teh HTMCLassifier class
 
 2. What is the **output**?
+Oputput of the Multisequnce learning experiment is Predicting hte Next elemnt after the learning done. 
+WE calculate the Predictor accuracy with both normal predicotor and ALso a Serialized predictor
+THis easblisheds that the newly implemented HTMClassifier Serialization  is correct and matching with normal predicotr class.
+
+a. The utput of a  serialized output .txt file in each experiment saved to the Azure output container.
+b. THe Important 
 
 3. What your algorithmas does? How ?
 
@@ -46,28 +53,30 @@ Readme.md file availiiable about project  here :- https://github.com/UniversityO
 
 Describe Your Cloud Experiment based on the Input/Output you gave in the Previous Section.
 
+THe Quee message currently gives the name of the input file in it.(File is a csv file with data for the input sequnce for the learning of the Multisequnce Experiment for the HTMCLassifier prediction check.)
+This file is the fetched from the Inputblobcontainer From the Azure Container Registry.
+
 **_Describe the Queue Json Message you used to trigger the experiment:_**  
 
 ~~~json
 {
      ExperimentId = "123",
-     InputFile = "https://beststudents2.blob.core.windows.net/documents2/daenet.mp4",
+     InputFile : "sampleinputseq.csv",
      .. // see project sample for more information 
 };
 ~~~
 
 - ExperimentId : Id of the experiment which is run  
-- InputFile: The video file used for trainign process  
+- InputFile: the Csv file contian g data for the input sequnce for the Dictionary parameter for the learning phase.  
 
 **_Describe your blob container registry:**  
 
 what are the blob containers you used e.g.:  
-- 'training_container' : for saving training dataset  
-  - the file provided for training:  
-  - zip, images, configs, ...  
-- 'result_container' : saving output written file  
-  - The file inside are result from the experiment, for example:  
-  - **file Example** screenshot, file, code  
+- 'inputblobcontainer' : for input sequnce to be given to the experiment is fetched 
+  - the file is currently refenced in Queue msg and used 
+- 'outblobcontainer-1' : saving output written file  
+  - The file i s a txt file which is a result of the serialized output of HTMCLassifier serilaize method  
+- "ResultTable": "results1" is used to store the basic Experiment output like accuracy and next predicted elemnt of a SERialized predictor
 
 
 **_Describe the Result Table_**
