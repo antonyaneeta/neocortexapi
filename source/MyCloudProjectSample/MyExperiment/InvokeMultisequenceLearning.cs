@@ -23,7 +23,7 @@ namespace MyExperiment
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
 
             // Create a new sequence "S1" using the azure data.
-            for (int i = 0; i < input.Count; i++)
+            for (int i = 1; i <= input.Count; i++)
             {
                 sequences.Add("S"+i, new List<double>(input[i]));
             }
