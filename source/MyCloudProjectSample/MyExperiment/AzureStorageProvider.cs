@@ -113,12 +113,12 @@ namespace MyExperiment
 
 
                   // Add the newly created entity.
-                  // await tableClient.AddEntityAsync(stronglyTypedEntity);
+                  await tableClient.AddEntityAsync(stronglyTypedEntity);
                   suffixNum++;
 
             }
             
-                await tableClient.AddEntityAsync((ExperimentResult)results);
+               
                 //thrownew NotImplementedExcepton();
 
                 Console.WriteLine("Uploaded to Table Storage successfully");
