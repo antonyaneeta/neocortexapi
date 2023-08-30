@@ -8,6 +8,7 @@ using MyCloudProject.Common;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Entities;
+using Org.BouncyCastle.Asn1.Tsp;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -32,9 +33,6 @@ namespace MyExperiment
         private ILogger logger;
 
         private MyConfig config;
-        private HtmClassifier<string, ComputeCycle> htmClassifier;
-
-        private Dictionary<string, List<double>> sequences;
 
         //
         public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
@@ -155,6 +153,7 @@ namespace MyExperiment
                         //uploaded the serialised output text file to the blob
                         await storageProvider.UploadResultFile("output.txt", null);
 
+                        
                        //TO DO---> Correct uploading the response accuracy of the predictor of the serialised one as well as the original one
                        await storageProvider.UploadExperimentResult(result);
 

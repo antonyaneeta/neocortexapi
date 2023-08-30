@@ -3,6 +3,7 @@ using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using LearningFoundation;
+using Microsoft.Azure.Documents;
 using Microsoft.Extensions.Configuration;
 using MyCloudProject.Common;
 using Org.BouncyCastle.Asn1.Tsp;
@@ -65,7 +66,7 @@ namespace MyExperiment
 
         public async Task UploadExperimentResult(IExperimentResult results )
         {
-
+            
 
             try { 
             // New instance of the TableClient class
@@ -98,26 +99,29 @@ namespace MyExperiment
             {
                 string rowKey = "Experiment" + "_" + suffixNum.ToString();
 
-                var stronglyTypedEntity = new ExperimentResult(partitionKey, rowKey)
+                var stronglyTypedEntity = new  ExperimentResult(partitionKey, rowKey)
                 {
                     PartitionKey = partitionKey,
                     RowKey = rowKey,
                     ExperimentId = "Experiment1",
                     StartTimeUtc = results.StartTimeUtc,
-                    EndTimeUtc = results.EndTimeUtc,
-                   
-                    //DurationSec = results[index].DurationSec,
+                    EndTimeUtc = results.EndTimeUtc
                 };
 
+                    //(ExperimentResult)results;
 
-                // Add the newly created entity.
-                await tableClient.AddEntityAsync(stronglyTypedEntity);
-                suffixNum++;
+
+
+                  // Add the newly created entity.
+                  // await tableClient.AddEntityAsync(stronglyTypedEntity);
+                  suffixNum++;
 
             }
-            //thrownew NotImplementedExcepton();
             
-            Console.WriteLine("Uploaded to Table Storage successfully");
+                await tableClient.AddEntityAsync((ExperimentResult)results);
+                //thrownew NotImplementedExcepton();
+
+                Console.WriteLine("Uploaded to Table Storage successfully");
 
             }
             catch (Exception ex)
