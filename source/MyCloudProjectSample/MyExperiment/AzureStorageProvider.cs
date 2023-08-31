@@ -99,13 +99,15 @@ namespace MyExperiment
             {
                 string rowKey = "Experiment" + "_" + suffixNum.ToString();
 
-                var stronglyTypedEntity = new  ExperimentResult(partitionKey, rowKey)
-                {
-                    PartitionKey = partitionKey,
-                    RowKey = rowKey,
-                    ExperimentId = "Experiment1",
-                    StartTimeUtc = results.StartTimeUtc,
-                    EndTimeUtc = results.EndTimeUtc
+                    var stronglyTypedEntity = new ExperimentResult(partitionKey, rowKey)
+                    {
+                        PartitionKey = partitionKey,
+                        RowKey = rowKey,
+                        ExperimentId = "Experiment1",
+                        StartTimeUtc = results.StartTimeUtc,
+                        EndTimeUtc = results.EndTimeUtc,
+                        Accuracy = results.Accuracy
+                    //Accuracy=results.acc
                 };
 
                     //(ExperimentResult)results;
