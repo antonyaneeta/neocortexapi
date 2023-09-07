@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.2.32505.173
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudProject", "MyCloudProject\MyCloudProject.csproj", "{F1D4DE86-8FB6-4992-8300-9580DE1D8F39}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CDF685B8-B25E-4FBD-BE51-A534B0FD0D4E} = {CDF685B8-B25E-4FBD-BE51-A534B0FD0D4E}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyCloudProject.Common", "MyCloudProject.Common\MyCloudProject.Common.csproj", "{CDF685B8-B25E-4FBD-BE51-A534B0FD0D4E}"
 EndProject
