@@ -1,5 +1,5 @@
 ﻿using NeoCortexApi;
-using Newtonsoft.Json.Linq;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -51,8 +51,7 @@ namespace MyExperiment
             predictor.Reset();
             serializedPredictor.Reset();
             Tuple<List<KeyValuePair<string, string>>, int> tuple = PredictNextElement(predictor, list1, serializedPredictor);
-            //PredictNextElement(serializedPredictor, list1);
-
+           
             //predictor.Reset();
             //serializedPredictor.Reset();
             //PredictNextElement(predictor, list2);

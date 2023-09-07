@@ -15,7 +15,6 @@ namespace MyCloudProject
         /// </summary>
         private static string projectName = "ML22/23-9 Implement Serialization of HtmClassifier -Team Alpha";
 
-        string test;
 
         static async Task Main(string[] args)
         {

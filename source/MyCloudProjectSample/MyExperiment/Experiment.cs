@@ -1,6 +1,6 @@
 ﻿using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
-using HtmClassifierUnitTest;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -8,8 +8,7 @@ using MyCloudProject.Common;
 using NeoCortexApi;
 using NeoCortexApi.Classifiers;
 using NeoCortexApi.Entities;
-using Org.BouncyCastle.Asn1.Tsp;
-using SkiaSharp;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

@@ -2,11 +2,10 @@
 using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
-using LearningFoundation;
-using Microsoft.Azure.Documents;
+
 using Microsoft.Extensions.Configuration;
 using MyCloudProject.Common;
-using Org.BouncyCastle.Asn1.Tsp;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
