@@ -1,6 +1,7 @@
 ﻿using NeoCortexApi;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -17,7 +18,7 @@ namespace MyExperiment
         /// RunMultisequence experiment to test serialization of HTM Classifier
         /// </summary>
         /// <param name="input"></param>
-        public static int RunMultiSequenceLearningExperiment(List<double[]> input, string testSequences,string outputFileName)
+        public static double RunMultiSequenceLearningExperiment(List<double[]> input, string testSequences,string outputFileName)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
@@ -57,13 +58,24 @@ namespace MyExperiment
 
             predictor.Reset();
             serializedPredictor.Reset();
-            Tuple<List<KeyValuePair<string, string>>, int> tuple = null;
+            Tuple<List<KeyValuePair<string, string>>, int,int> tuple = null;
             //tuple=PredictNextElement(predictor, list1, serializedPredictor);
 
+              
             foreach (var testInp in trainingData.TestValidation)
             {
-               tuple = PredictNextElement(predictor, testInp, serializedPredictor);
+                predictor.Reset();
+                serializedPredictor.Reset();
+                tuple = PredictNextElement(predictor, testInp, serializedPredictor);
+                tuple.Item1;
+
+
             }
+
+            var acc = trainingData.TestValidation
+             .Select(seq => PredictNextElement(predictor, seq, serializedPredictor).Item2)
+             .Average();
+
             //predictor.Reset();
             //serializedPredictor.Reset();
             //PredictNextElement(predictor, list2);
@@ -74,8 +86,11 @@ namespace MyExperiment
             //serializedPredictor.Reset();
             //PredictNextElement(predictor, list3);
             //PredictNextElement(predictor, list3, serializedPredictor);
-            var v= tuple.Item2;
-            return v;
+            
+            
+           // var v= tuple.Item2;
+            
+            return acc;
         }
 
         #region the PredictNext element to compare if both the serialized Predictor and normal Predictor has same prediction.
@@ -86,12 +101,12 @@ namespace MyExperiment
         /// <param name="testItem"></param>
         /// <param name="serPredictor"></param>
         /// <returns></returns>
-        private static Tuple<List<KeyValuePair<String, String>>,int> PredictNextElement(Predictor predictor, double[] testItem, Predictor serPredictor)
+        private static Tuple<List<KeyValuePair<String, String>>,int,int> PredictNextElement(Predictor predictor, double[] testItem, Predictor serPredictor)
 
         {
-            Debug.WriteLine("------------------------------");
-            Debug.WriteLine("-------------"+"Sequence to test"+testItem+"-----------------");
-            List<KeyValuePair<String, String>> listofPrediction = new List<KeyValuePair<String, String>>();
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("-------------"+"Sequence to test: "+testItem.ToString+"-----------------");
+            List<KeyValuePair<String, String>> listofPredictions = new List<KeyValuePair<String, String>>();
             int matchCount = 0;
             int totalCount = 0;
             int matchCount1 = 0;
@@ -103,17 +118,13 @@ namespace MyExperiment
 
 
                 var res = predictor.Predict(item);
-                var res1 = serPredictor.Predict(item);
+                var resSerializedPred = serPredictor.Predict(item);
 
-                //try to get siliary of each elemnt of two predictions
-                //for (int k = 0; k < res.Count; k++)
-                //{
+                //try to get similarity of each element of two predictors
 
-                //}
-
-                if (res.Count > 0 && res1.Count > 0)
+                if (res.Count > 0 && resSerializedPred.Count > 0)
                 {
-                    Console.WriteLine($"Comparing the Input predicted from predictor,  {res[0].PredictedInput} : and from serializedPredictor: {res1[0].PredictedInput}");
+                    Console.WriteLine($"Comparing the Sequence predicted from normal predictor,  {res[0].PredictedInput} : and from serializedPredictor: {resSerializedPred[0].PredictedInput}");
                 }
 
 
@@ -124,46 +135,79 @@ namespace MyExperiment
                         Console.WriteLine($"{pred.PredictedInput} - {pred.Similarity}");
                     }
 
-
                     var similarity = res.First().Similarity;
 
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
-                    Console.WriteLine($"From actualPredictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
+                    Console.WriteLine($"Normal Predictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
 
                     matchCount += 1;
 
-                    listofPrediction.
+                    listofPredictions.
                         Add(new KeyValuePair<String, String>($"item name : {item} : for normal predictor " + tokens[0], tokens2.Last()));
                 }
                 else
-                    Console.WriteLine("Nothing predicted for normal predictor :(");
-                    totalCount += 1;
-                
-
-                if (res1.Count > 0)
                 {
-                    foreach (var pred1 in res1)
+                    Console.WriteLine("Nothing predicted for normal predictor :(");
+                }
+                    totalCount += 1;
+
+
+                // Thie section below loops on the prediction for each element in the item for htmClassifier serialized predictor
+
+                if (resSerializedPred.Count > 0)
+                {
+                    foreach (var pred1 in resSerializedPred)
                     {
                         Console.WriteLine($"{pred1.PredictedInput} - {pred1.Similarity}");
                     }
-                    var similarity1 = res.First().Similarity;
+                    bool chooseSecond = false;
 
-                    var tokens = res1.First().PredictedInput.Split('_');
-                    var tokens2 = res1.First().PredictedInput.Split('-');
+                    if (resSerializedPred.Count >= 1)
+                    {
+                        var similarityFirst = resSerializedPred.First().Similarity;
+                        var secondSeqSimilarity = resSerializedPred[1].Similarity;
+                        if (similarityFirst == secondSeqSimilarity)
+                            chooseSecond = true;
+                    }
+                    var tokens = new String[] { };
+                    var tokens2 = new String[] { };
+                    if (chooseSecond)
+                    {
+                        tokens = resSerializedPred[1].PredictedInput.Split('_');
+                        tokens2 = resSerializedPred[1].PredictedInput.Split('-');
+                    }
+                    else
+                    {
+                        tokens = resSerializedPred.First().PredictedInput.Split('_');
+                        tokens2 = resSerializedPred.First().PredictedInput.Split('-');
+                    }
                     Console.WriteLine($"\"SerializedPredictor-->  Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
-                    listofPrediction.Add(new KeyValuePair<String, String>($"item name : {item} : for serialized predictor " + tokens[0], tokens2.Last()));
+                    listofPredictions.Add(new KeyValuePair<String, String>($"item name : {item} : for serialized predictor " + tokens[0], tokens2.Last()));
 
                     matchCount1 += 1;
                 }
                 else
+                {
                     Console.WriteLine("Nothing predicted for serialized predictor  :(");
+                }
                     totalCount1 += 1;
                 
             }
-            foreach (KeyValuePair<string, string> kvp in listofPrediction)
+           
+            foreach (KeyValuePair<string, string> kvp in listofPredictions)
             {
+                if (!IsEmptyKeyValuePair(kvp))
+                {
+                    
                 Console.WriteLine(string.Format("Key: {0} Value: {1}", kvp.Key, kvp.Value));
+            }
+            }
+
+            static bool IsEmptyKeyValuePair<TKey, TValue>(KeyValuePair<TKey, TValue> kvp)
+            {
+                // Check if both the key and value are null
+                return kvp.Key == null && kvp.Value == null;
             }
 
             // Calculate predictorAccuracy
@@ -175,10 +219,10 @@ namespace MyExperiment
 
             Console.WriteLine("------------predictorAccuracy------------------"+ predictorAccuracy);
             Console.WriteLine("------------serialisedpredictorAccuracy------------------"+ serialisedPredAccuracy);
-            Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
-            Debug.WriteLine("------------------------------");
+            //Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
+            Console.WriteLine("------------------------------");
             
-            return Tuple.Create(listofPrediction,serialisedPredAccuracy);
+            return Tuple.Create(listofPredictions,serialisedPredAccuracy, predictorAccuracy);
         }
     }
     #endregion

@@ -88,8 +88,8 @@ namespace MyExperiment
             //    res.Timestamp = DateTime.Now;
             //}
 
-            float accuracy = v;
-            res.Accuracy = (float)accuracy;
+            double accuracy = v;
+            res.Accuracy = accuracy;
             //res.OutputFiles("SerialiseOutput.txt");
 
 
@@ -153,7 +153,7 @@ namespace MyExperiment
                         await storageProvider.UploadResultFile(outputFileName, null);
 
                         
-                       //TO DO---> Correct uploading the response accuracy of the predictor of the serialised one as well as the original one
+                       //Correctly uploading the response accuracy of the predictor of the serialised one as well as the original one
                        await storageProvider.UploadExperimentResult(result);
 
                         //await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);

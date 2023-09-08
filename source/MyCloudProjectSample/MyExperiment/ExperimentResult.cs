@@ -43,7 +43,7 @@ namespace MyExperiment
         public string[] OutputFiles { get; set; }
         // Your properties related to experiment.
 
-        public float Accuracy { get; set; }
+        public double Accuracy { get; set; }
 
 
     }

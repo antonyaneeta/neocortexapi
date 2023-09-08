@@ -16,7 +16,7 @@ namespace MyCloudProject.Common
         DateTime? StartTimeUtc { get; set; }
 
         DateTime? EndTimeUtc { get; set; }
-        float Accuracy { get; set; }
+        double Accuracy { get; set; }
     }
 
 }
