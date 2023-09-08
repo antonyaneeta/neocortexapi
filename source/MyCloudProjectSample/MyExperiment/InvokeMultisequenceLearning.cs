@@ -3,8 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace MyExperiment
@@ -15,7 +17,7 @@ namespace MyExperiment
         /// RunMultisequence experiment to test serialization of HTM Classifier
         /// </summary>
         /// <param name="input"></param>
-        public static int RunMultiSequenceLearningExperiment(List<double[]> input)
+        public static int RunMultiSequenceLearningExperiment(List<double[]> input, string testSequences,string outputFileName)
         {
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
@@ -32,15 +34,20 @@ namespace MyExperiment
            // sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
             sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
+            var text = File.ReadAllText(testSequences, Encoding.UTF8);
+            
+            var trainingData = JsonSerializer.Deserialize<TestData>(text);
+
+
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             Predictor serializedPredictor;
-            var predictor = experiment.Run(sequences, out serializedPredictor);
+            var predictor = experiment.Learn(sequences, outputFileName, out serializedPredictor);
 
             //
-            // These list are used to see how the prediction works.
-            // Predictor is traversing the list element by element. 
+            // These testItem are used to see how the prediction works.
+            // Predictor is traversing the testItem element by element. 
             // By providing more elements to the prediction, the predictor delivers more precise result.
             var list1 = new double[] { 1.0, 2.0, 3.0, 4.0, 2.0, 5.0 };
             //var list1 = new double[] { 9, 10 };
@@ -50,8 +57,13 @@ namespace MyExperiment
 
             predictor.Reset();
             serializedPredictor.Reset();
-            Tuple<List<KeyValuePair<string, string>>, int> tuple = PredictNextElement(predictor, list1, serializedPredictor);
-           
+            Tuple<List<KeyValuePair<string, string>>, int> tuple = null;
+            //tuple=PredictNextElement(predictor, list1, serializedPredictor);
+
+            foreach (var testInp in trainingData.TestValidation)
+            {
+               tuple = PredictNextElement(predictor, testInp, serializedPredictor);
+            }
             //predictor.Reset();
             //serializedPredictor.Reset();
             //PredictNextElement(predictor, list2);
@@ -62,7 +74,7 @@ namespace MyExperiment
             //serializedPredictor.Reset();
             //PredictNextElement(predictor, list3);
             //PredictNextElement(predictor, list3, serializedPredictor);
-            var v=tuple.Item2;
+            var v= tuple.Item2;
             return v;
         }
 
@@ -71,23 +83,23 @@ namespace MyExperiment
         /// This is now returning the serialized Predictors accuracy in predicting the next element correct as normal Predictor
         /// </summary>
         /// <param name="predictor"></param>
-        /// <param name="list"></param>
+        /// <param name="testItem"></param>
         /// <param name="serPredictor"></param>
         /// <returns></returns>
-        private static Tuple<List<KeyValuePair<String, String>>,int> PredictNextElement(Predictor predictor, double[] list, Predictor serPredictor)
+        private static Tuple<List<KeyValuePair<String, String>>,int> PredictNextElement(Predictor predictor, double[] testItem, Predictor serPredictor)
 
         {
             Debug.WriteLine("------------------------------");
+            Debug.WriteLine("-------------"+"Sequence to test"+testItem+"-----------------");
             List<KeyValuePair<String, String>> listofPrediction = new List<KeyValuePair<String, String>>();
             int matchCount = 0;
             int totalCount = 0;
             int matchCount1 = 0;
             int totalCount1 = 0;
-            foreach (var item in list)
+            foreach (var item in testItem)
             {
                 //Checking prediction for next predicted element for each item
                 Console.WriteLine($" item name : {item}");
-
 
 
                 var res = predictor.Predict(item);
@@ -165,9 +177,15 @@ namespace MyExperiment
             Console.WriteLine("------------serialisedpredictorAccuracy------------------"+ serialisedPredAccuracy);
             Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
             Debug.WriteLine("------------------------------");
+            
             return Tuple.Create(listofPrediction,serialisedPredAccuracy);
         }
     }
     #endregion
+    public class TestData
+    {
+        public List<double[]> TestValidation { get; set; } = new();
+    }
+
 }
 

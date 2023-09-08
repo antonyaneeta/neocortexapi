@@ -18,11 +18,13 @@ namespace MyExperiment
     /// </summary>
     public class MultiSequenceLearning
     {
-        /// <summary>
         /// Runs the learning of sequences.
         /// </summary>
         /// <param name="sequences">Dictionary of sequences. KEY is the sequence name, the VALUE is the list of element of the sequence.</param>
-        public Predictor Run(Dictionary<string, List<double>> sequences, out Predictor serializedPredictor)
+        /// <param name="serializedPredictor"> the out param is a additional Predictor the method returns, (actually a new Predictor for Serialized HTMClassifier)
+        /// other than the normal predictor returned after Learning process  </param>
+        /// <returns></returns>
+        public Predictor Learn(Dictionary<string, List<double>> sequences,string outputFileName, out Predictor serializedPredictor)
         {
             Console.WriteLine($"Hello NeocortexApi! Experiment {nameof(MultiSequenceLearning)}");
 
@@ -72,13 +74,13 @@ namespace MyExperiment
 
             EncoderBase encoder = new ScalarEncoder(settings);
 
-            return RunExperiment(inputBits, cfg, encoder, sequences, out serializedPredictor);
+            return RunExperiment(inputBits, cfg, encoder, sequences, outputFileName, out serializedPredictor);
         }
 
         /// <summary>
         ///
         /// </summary>
-        private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences, out Predictor serializedPredictor)
+        private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences,string outputFileName, out Predictor serializedPredictor)
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -170,7 +172,7 @@ namespace MyExperiment
 
             // Clear all learned patterns in the classifier.
             cls.ClearState();
-
+            serClassifier.ClearState();
             // We activate here the Temporal Memory algorithm.
             layer1.HtmModules.Add("tm", tm);
 
@@ -236,6 +238,7 @@ namespace MyExperiment
                         }
 
                         cls.Learn(key, actCells.ToArray());
+                        serClassifier.Learn(key, actCells.ToArray());
 
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
@@ -308,20 +311,29 @@ namespace MyExperiment
 
             Debug.WriteLine("------------ END ------------");
 
-            using (var writer = new StreamWriter("output.txt"))
+            
+
+
+            //here we actually check for the HTMCLassifier newly created serialize method to create a serialized file with current variables od the object.
+            using (var writer = new StreamWriter(outputFileName))
 
             {
                 cls.Serialize(cls, null, writer);
             }
 
-
-            using (StreamReader sr = new StreamReader("output.txt"))
+            // deserialize the earlier serialized status of the HTMClassifier class to object, and hence create and heck the Correctness of the prediction
+            // this serClassifier object is also passed to create a new Predictor 
+            // So now we can compare normal Predictor and also a HTMClassifier Predictor.
+            using (StreamReader sr = new StreamReader(outputFileName))
             {
            
                 serClassifier = cls.Deserialize(sr);
                 
             }
+            // a new Predictor after serialization deserialization of HTMClassifier class
             serializedPredictor = new Predictor(layer1, mem, serClassifier);
+            
+            //returns a normal Predictor
             return new Predictor(layer1, mem, cls);
         }
 
