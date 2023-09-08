@@ -12,6 +12,7 @@ namespace MyCloudProject.Common
         string ExperimentId { get; set; }
 
         string InputFile { get; set; }
+        string TestInputFile { get; set; }
 
         string Name { get; set; }
 

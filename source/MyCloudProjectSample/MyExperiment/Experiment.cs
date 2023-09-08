@@ -44,7 +44,7 @@ namespace MyExperiment
         }
 
 
-        public Task<IExperimentResult> Run(string inputFile)
+        public Task<IExperimentResult> Run(string inputFile,string testSequences,string outputFileName)
         {
 
 
@@ -56,7 +56,7 @@ namespace MyExperiment
 
             res.StartTimeUtc = DateTime.UtcNow;
 
-            //Run your experiment code here.
+            //Learn your experiment code here.
 
             // // Serialization check.
 
@@ -70,7 +70,7 @@ namespace MyExperiment
 
             // The actual learning and predict method call of our HTM Serialize below
 
-            var v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
+            var v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues, testSequences,outputFileName);
 
             //Get List of results for multiple sequence annd loop as result to azure table result
             //var resultArr = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
@@ -142,15 +142,15 @@ namespace MyExperiment
                         ExerimentRequestMessage request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
 
                         var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
+                        var testSequenceFile = await this.storageProvider.DownloadInputFile(request.TestInputFile);
 
-                        IExperimentResult result = await this.Run(inputFile);
+                        var outputFileName = "output" + $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}" + ".txt";
 
-                        //TODO. do serialization of the result.
-                        var fileBytes = File.ReadLines("output.txt");
+                        IExperimentResult result = await this.Run(inputFile,testSequenceFile, outputFileName);
 
-
-                        //uploaded the serialised output text file to the blob
-                        await storageProvider.UploadResultFile("output.txt", null);
+                    
+                        //uploaded the serialised output text file for the experiment to the blob
+                        await storageProvider.UploadResultFile(outputFileName, null);
 
                         
                        //TO DO---> Correct uploading the response accuracy of the predictor of the serialised one as well as the original one

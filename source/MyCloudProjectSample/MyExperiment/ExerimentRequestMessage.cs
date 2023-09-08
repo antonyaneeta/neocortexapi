@@ -9,6 +9,7 @@ namespace MyExperiment
     {
         public string ExperimentId { get; set; }
         public string InputFile { get; set; }
+        public string TestInputFile { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }
