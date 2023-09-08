@@ -46,18 +46,24 @@ namespace MyExperiment
                 // Download the blob's contents and save it to a file
                 BlobDownloadInfo download = await blob.DownloadAsync();
 
-                using (FileStream file = File.OpenWrite(fileName))
-                {
-                    download.Content.CopyTo(file);
+                //using (FileStream file = File.OpenWrite(fileName))
+                //{
+                //    download.Content.CopyTo(file);
 
-                    return file.Name;
-                }
+                //    return file.Name;
+                //}
+
+
+
+                await blob.DownloadToAsync(fileName);
+
+                return fileName;
 
 
             }
             catch (Exception ex)
             {
-                throw new NotImplementedException(); ;
+                throw new NotImplementedException(); 
             }
 
             // throw new NotImplementedException();
