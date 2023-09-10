@@ -238,8 +238,8 @@ namespace MyExperiment
                         }
 
                         cls.Learn(key, actCells.ToArray());
-                        serClassifier.Learn(key, actCells.ToArray());
-
+                      
+                        
                         Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
                         Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
 
@@ -307,14 +307,14 @@ namespace MyExperiment
 
                 if (isLearningCompleted == false)
                     throw new Exception($"The system didn't learn with expected acurracy!");
-            }
+            }         
 
             Debug.WriteLine("------------ END ------------");
 
-            
 
 
-            //here we actually check for the HTMCLassifier newly created serialize method to create a serialized file with current variables od the object.
+
+            //here we actually check for the HTMClassifier newly created serialize method to create a serialized file with current variables od the object.
             using (var writer = new StreamWriter(outputFileName))
 
             {
@@ -326,13 +326,147 @@ namespace MyExperiment
             // So now we can compare normal Predictor and also a HTMClassifier Predictor.
             using (StreamReader sr = new StreamReader(outputFileName))
             {
-           
-                serClassifier = cls.Deserialize(sr);
-                
+
+                serClassifier = serClassifier.Deserialize(sr);
+                foreach (var sequenceKeyPair in sequences)
+                {
+                    Debug.WriteLine($"-------------- Sequences {sequenceKeyPair.Key} ---------------");
+
+                    int maxPrevInputs = sequenceKeyPair.Value.Count - 1;
+
+                    List<string> previousInputs = new List<string>();
+
+                    previousInputs.Add("-1.0");
+
+                    // Set on true if the system has learned the sequence with a maximum acurracy.
+                    bool isLearningCompleted = false;
+
+                    //
+                    // Now training with SP+TM. SP is pretrained on the given input pattern set.
+                    for (int i = 0; i < maxCycles; i++)
+                    {
+                        matches = 0;
+
+                        cycle++;
+
+                        Debug.WriteLine("");
+
+                        Debug.WriteLine($"-------------- Cycle {cycle} ---------------");
+                        Debug.WriteLine("");
+
+                        foreach (var input in sequenceKeyPair.Value)
+                        {
+                            Debug.WriteLine($"-------------- {input} ---------------");
+
+                            var lyrOut = layer1.Compute(input, true) as ComputeCycle;
+
+                            var activeColumns = layer1.GetResult("sp") as int[];
+
+                            previousInputs.Add(input.ToString());
+                            if (previousInputs.Count > (maxPrevInputs + 1))
+                                previousInputs.RemoveAt(0);
+
+                            // In the pretrained SP with HPC, the TM will quickly learn cells for patterns
+                            // In that case the starting sequence 4-5-6 might have the sam SDR as 1-2-3-4-5-6,
+                            // Which will result in returning of 4-5-6 instead of 1-2-3-4-5-6.
+                            // HtmClassifier allways return the first matching sequence. Because 4-5-6 will be as first
+                            // memorized, it will match as the first one.
+                            if (previousInputs.Count < maxPrevInputs)
+                                continue;
+
+                            string key = GetKey(previousInputs, input, sequenceKeyPair.Key);
+
+                            List<Cell> actCells;
+
+                            if (lyrOut.ActiveCells.Count == lyrOut.WinnerCells.Count)
+                            {
+                                actCells = lyrOut.ActiveCells;
+                            }
+                            else
+                            {
+                                actCells = lyrOut.WinnerCells;
+                            }
+
+
+                            serClassifier.Learn(key, actCells.ToArray());
+
+                            Debug.WriteLine($"Col  SDR: {Helpers.StringifyVector(lyrOut.ActivColumnIndicies)}");
+                            Debug.WriteLine($"Cell SDR: {Helpers.StringifyVector(actCells.Select(c => c.Index).ToArray())}");
+
+                            //
+                            // If the list of predicted values from the previous step contains the currently presenting value,
+                            // we have a match.
+                            if (lastPredictedValues.Contains(key))
+                            {
+                                matches++;
+                                Debug.WriteLine($"Match. Actual value: {key} - Predicted value: {lastPredictedValues.FirstOrDefault(key)}.");
+                            }
+                            else
+                                Debug.WriteLine($"Missmatch! Actual value: {key} - Predicted values: {String.Join(',', lastPredictedValues)}");
+
+                            if (lyrOut.PredictiveCells.Count > 0)
+                            {
+                                //var predictedInputValue = cls.GetPredictedInputValue(lyrOut.PredictiveCells.ToArray());
+                                var predictedInputValues = serClassifier.GetPredictedInputValues(lyrOut.PredictiveCells.ToArray(), 3);
+
+                                foreach (var item in predictedInputValues)
+                                {
+                                    Debug.WriteLine($"Current Input: {input} \t| Predicted Input: {item.PredictedInput} - {item.Similarity}");
+                                }
+
+                                lastPredictedValues = predictedInputValues.Select(v => v.PredictedInput).ToList();
+                            }
+                            else
+                            {
+                                Debug.WriteLine($"NO CELLS PREDICTED for next cycle.");
+                                lastPredictedValues = new List<string>();
+                            }
+                        }
+
+                        // The first element (a single element) in the sequence cannot be predicted
+                        double maxPossibleAccuraccy = (double)((double)sequenceKeyPair.Value.Count - 1) / (double)sequenceKeyPair.Value.Count * 100.0;
+
+                        double accuracy = (double)matches / (double)sequenceKeyPair.Value.Count * 100.0;
+
+                        Debug.WriteLine($"Cycle: {cycle}\tMatches={matches} of {sequenceKeyPair.Value.Count}\t {accuracy}%");
+
+                        if (accuracy >= maxPossibleAccuraccy)
+                        {
+                            maxMatchCnt++;
+                            Debug.WriteLine($"100% accuracy reched {maxMatchCnt} times.");
+
+                            //
+                            // Experiment is completed if we are 30 cycles long at the 100% accuracy.
+                            if (maxMatchCnt >= 30)
+                            {
+                                sw.Stop();
+                                Debug.WriteLine($"Sequence learned. The algorithm is in the stable state after 30 repeats with with accuracy {accuracy} of maximum possible {maxMatchCnt}. Elapsed sequence {sequenceKeyPair.Key} learning time: {sw.Elapsed}.");
+                                isLearningCompleted = true;
+                                break;
+                            }
+                        }
+                        else if (maxMatchCnt > 0)
+                        {
+                            Debug.WriteLine($"At 100% accuracy after {maxMatchCnt} repeats we get a drop of accuracy with accuracy {accuracy}. This indicates instable state. Learning will be continued.");
+                            maxMatchCnt = 0;
+                        }
+
+                        // This resets the learned state, so the first element starts allways from the beginning.
+                        tm.Reset(mem);
+                    }
+
+                    if (isLearningCompleted == false)
+                        throw new Exception($"The system didn't learn with expected acurracy!");
+                }
+
+
             }
             // a new Predictor after serialization deserialization of HTMClassifier class
             serializedPredictor = new Predictor(layer1, mem, serClassifier);
             
+            // check f both the instances of HTMClassifiers are equal
+            //bool equal=cls.Equals(serClassifier);
+
             //returns a normal Predictor
             return new Predictor(layer1, mem, cls);
         }
