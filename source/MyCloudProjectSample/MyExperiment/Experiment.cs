@@ -102,7 +102,7 @@ namespace MyExperiment
         {
             double pdValue;
             List <double[]> pdValues = new List<double[]>();
-            List<string> list = File.ReadAllLines(filePath).ToList();
+            string[] list = File.ReadAllLines(filePath);
             foreach (var fileListLine in list)
             {
                 var values = fileListLine.Split(';')
@@ -150,7 +150,7 @@ namespace MyExperiment
 
                     
                         //uploaded the serialised output text file for the experiment to the blob
-                        await storageProvider.UploadResultFile(outputFileName, null);
+                       await storageProvider.UploadResultFile(outputFileName, null);
 
                         
                        //Correctly uploading the response accuracy of the predictor of the serialised one as well as the original one
