@@ -30,6 +30,6 @@ namespace MyCloudProject.Common
         /// </summary>
         /// <param name="result"></param>
         /// <returns>Not used.</returns>
-        Task UploadExperimentResult(IExperimentResult result);
+        Task UploadExperimentResult(List<IExperimentResult> result);
     }
 }

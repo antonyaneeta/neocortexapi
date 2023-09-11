@@ -33,25 +33,26 @@ namespace MyExperiment
 
         private MyConfig config;
 
+        private IExerimentRequestMessage exerimentRequest;
         //
-        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log)
+        public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log, IExerimentRequestMessage expReq)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
-
+            this.exerimentRequest=expReq;
             config = new MyConfig();
             configSection.Bind(config);
         }
 
 
-        public Task<IExperimentResult> Run(string inputFile,string testSequences,string outputFileName)
+        public Task<List<IExperimentResult>> Run(string inputFile,string testSequences,string outputFileName)
         {
 
 
             // TODO read file
 
             // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
-
+            List<IExperimentResult> resultList = new List<IExperimentResult>();
             ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
 
             res.StartTimeUtc = DateTime.UtcNow;
@@ -72,29 +73,37 @@ namespace MyExperiment
 
             var v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues, testSequences,outputFileName);
 
-            //Get List of results for multiple sequence annd loop as result to azure table result
+            //Get List of results for multiple sequence and loop as result to azure table result
             //var resultArr = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues);
-            //foreach (var item in resultArr)
-            //{
-            //    double accuracy = item.accuracy;
-            //    string nextElem = item.nextElement;
-            //    res.Accuracy = accuracy;
-            //    res.nextElement = nextElem;
-            //    res.Name = this.expReq.Name;
-            //    res.ExperimentId = this.expReq.ExperimentId;
-            //    res.Description = this.expReq.Description;
-            //    res.testFileUrl = this.expReq.testFile;
-            //    res.InputSequenceFileUrl = this.expReq.InputFile;
-            //    res.Timestamp = DateTime.Now;
-            //}
+            foreach (var item in v)
+            {
+                double accuracy = item.Value[0];
+                double normalPredictorAcc= item.Value[1];
+                string testedPredList=item.Key.ToString();
+                //string nextElem = item.nextElement;
+                res.EndTimeUtc = DateTime.UtcNow;
+               
+                var elapsedTime = res.EndTimeUtc - res.StartTimeUtc;
+                res.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
+                res.Accuracy = accuracy;
+                res.NormalPredAccuracy = normalPredictorAcc;
+                res.testedPrediction=testedPredList;
+                res.Name = this.exerimentRequest.Name;
+                res.Description = this.exerimentRequest.Description;
+                //res.testFileUrl = this.expReq.testFile;
+                //res.InputSequenceFileUrl = this.expReq.InputFile;
+                res.Timestamp = DateTime.Now;
 
-            double accuracy = v;
-            res.Accuracy = accuracy;
+                resultList.Add(res);
+            }
+
+
+            //res.Accuracy = accuracy;
             //res.OutputFiles("SerialiseOutput.txt");
 
 
 
-            return Task.FromResult<IExperimentResult>(res); // TODO...
+            return Task.FromResult (resultList); // TODO...
         }
 
 
@@ -146,7 +155,7 @@ namespace MyExperiment
 
                         var outputFileName = "output" + $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}" + ".txt";
 
-                        IExperimentResult result = await this.Run(inputFile,testSequenceFile, outputFileName);
+                        List<IExperimentResult> results = await this.Run(inputFile,testSequenceFile, outputFileName);
 
                     
                         //uploaded the serialised output text file for the experiment to the blob
@@ -154,9 +163,9 @@ namespace MyExperiment
 
                         
                        //Correctly uploading the response accuracy of the predictor of the serialised one as well as the original one
-                       await storageProvider.UploadExperimentResult(result);
+                       await storageProvider.UploadExperimentResult(results);
 
-                        //await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
+                       await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }
                     catch (Exception ex)
                     {
