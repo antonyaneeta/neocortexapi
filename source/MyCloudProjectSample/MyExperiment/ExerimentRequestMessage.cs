@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyExperiment
 {
-    internal class ExerimentRequestMessage : IExerimentRequestMessage
+    public class ExerimentRequestMessage : IExerimentRequestMessage
     {
         public string ExperimentId { get; set; }
         public string InputFile { get; set; }
