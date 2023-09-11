@@ -69,7 +69,7 @@ namespace MyExperiment
             // throw new NotImplementedException();
         }
 
-        public async Task UploadExperimentResult(IExperimentResult results )
+        public async Task UploadExperimentResult(List<IExperimentResult> results )
         {
             
 
@@ -84,23 +84,17 @@ namespace MyExperiment
 
             await tableClient.CreateIfNotExistsAsync();
 
-
-            //var client = new TableClient(this.config.StorageConnectionString, this.config.ResultTable);
-
-            //await client.CreateIfNotExistsAsync();
-
-
             Random rnd = new Random();
 
             int randomnumber = rnd.Next(0, 1000);
             string tableName = this.config.ResultTable + "table";
             string partitionKey = randomnumber.ToString();
             int suffixNum = 1;
-
+            
 
             // Create an instance of the strongly-typed entity and set their properties.
 
-            for (int index = 0; index < 1; index++)
+            for (int i = 0; i <results.Count ; i++)
             {
                 string rowKey = "Experiment" + "_" + suffixNum.ToString();
 
@@ -108,20 +102,25 @@ namespace MyExperiment
                     {
                         PartitionKey = partitionKey,
                         RowKey = rowKey,
-                        ExperimentId = "Experiment1",
-                        StartTimeUtc = results.StartTimeUtc,
-                        EndTimeUtc = results.EndTimeUtc,
-                        Accuracy = results.Accuracy
-                    //Accuracy=results.acc
+                        ExperimentId = results[i].Name+ results[i].testedPrediction,
+                        Description= results[i].Description,
+                        DurationSec = results[i].DurationSec,
+                        StartTimeUtc = results[i].StartTimeUtc,
+                        EndTimeUtc = results[i].EndTimeUtc,
+                        Accuracy = results[i].Accuracy,
+                        NormalPredAccuracy = results[i].NormalPredAccuracy
+                        
+
                 };
+                    suffixNum++;
 
                     //(ExperimentResult)results;
 
 
 
-                  // Add the newly created entity.
-                  await tableClient.AddEntityAsync(stronglyTypedEntity);
-                  suffixNum++;
+                    // Add the newly created entity.
+                    await tableClient.AddEntityAsync(stronglyTypedEntity);
+                  
 
             }
             
