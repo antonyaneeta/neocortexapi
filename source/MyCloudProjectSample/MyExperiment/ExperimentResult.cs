@@ -44,7 +44,7 @@ namespace MyExperiment
         // Your properties related to experiment.
 
         public double Accuracy { get; set; }
-
-
+        public double NormalPredAccuracy { get; set; }
+        public string testedPrediction { get; set; }
     }
 }
