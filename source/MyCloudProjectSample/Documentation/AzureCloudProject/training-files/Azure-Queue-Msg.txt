@@ -1,0 +1,5 @@
+{
+"ExperimentId":"ExperimentV1",
+"InputFile":"sampleinputseq.csv",
+"TestInputFile":"TestValidationInput.txt"
+}
