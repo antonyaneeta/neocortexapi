@@ -25,11 +25,17 @@ namespace MyExperiment
             configSection.Bind(config);
         }
 
+        public static string GenerateRandomPartitionKey()
+        {
+            // Generate a random GUID and use it as the partition key.
+            return Guid.NewGuid().ToString();
+        }
+
         public async Task<string> DownloadInputFile(string fileName)
         {
             //BlobContainerClient container = new BlobContainerClient(this.config.StorageConnectionString, "inputblobcontainer");
             BlobServiceClient blobServiceClient = new BlobServiceClient(this.config.StorageConnectionString);
-            BlobContainerClient container = blobServiceClient.GetBlobContainerClient("inputblobcontainer");
+            BlobContainerClient container = blobServiceClient.GetBlobContainerClient(this.config.TrainingContainer);
 
             await container.CreateIfNotExistsAsync();
 
@@ -39,10 +45,6 @@ namespace MyExperiment
                 // Get a reference to a blob named "sample-file"
                 BlobClient blob = container.GetBlobClient(fileName);
 
-                //throw if not exists:
-                //blob.ExistsAsync
-
-                // return "../myinputfilexy.csv"
                 // Download the blob's contents and save it to a file
                 BlobDownloadInfo download = await blob.DownloadAsync();
 
@@ -66,7 +68,6 @@ namespace MyExperiment
                 throw new NotImplementedException(); 
             }
 
-            // throw new NotImplementedException();
         }
 
         public async Task UploadExperimentResult(List<IExperimentResult> results )
@@ -84,11 +85,8 @@ namespace MyExperiment
 
             await tableClient.CreateIfNotExistsAsync();
 
-            Random rnd = new Random();
-
-            int randomnumber = rnd.Next(0, 1000);
-            string tableName = this.config.ResultTable + "table";
-            string partitionKey = randomnumber.ToString();
+            
+            string partitionKey = GenerateRandomPartitionKey();
             int suffixNum = 1;
             
 
@@ -96,36 +94,31 @@ namespace MyExperiment
 
             for (int i = 0; i <results.Count ; i++)
             {
-                string rowKey = "Experiment" + "_" + suffixNum.ToString();
+                string rowKey = results[i].ExperimentId + "_" + suffixNum.ToString();
 
                     var stronglyTypedEntity = new ExperimentResult(partitionKey, rowKey)
                     {
                         PartitionKey = partitionKey,
-                        RowKey = rowKey,
-                        ExperimentId = results[i].Name+ results[i].testedPrediction,
-                        Description= results[i].Description,
+                        RowKey = rowKey+ " : "+results[i].TestedSequence,                 
                         DurationSec = results[i].DurationSec,
+                        SerializedPredictorAccuracy = results[i].SerializedPredictorAccuracy,
+                        NormalPredAccuracy = results[i].NormalPredAccuracy,
                         StartTimeUtc = results[i].StartTimeUtc,
                         EndTimeUtc = results[i].EndTimeUtc,
-                        Accuracy = results[i].Accuracy,
-                        NormalPredAccuracy = results[i].NormalPredAccuracy
-                        
+                        ExperimentId = results[i].ExperimentId,
+                        Name = results[i].Name,
+                        Description = results[i].Description
 
-                };
+                    };
                     suffixNum++;
-
-                    //(ExperimentResult)results;
-
-
-
-                    // Add the newly created entity.
+              
+                    // Add the newly created entity to Azure.
                     await tableClient.AddEntityAsync(stronglyTypedEntity);
                   
 
             }
-            
                
-                //thrownew NotImplementedExcepton();
+                //throw new NotImplementedException();
 
                 Console.WriteLine("Uploaded to Table Storage successfully");
 
@@ -135,22 +128,11 @@ namespace MyExperiment
                 Console.Error.WriteLine(ex.ToString());
             }
 
-
-            //ExperimentResult res = new ExperimentResult("damir", "123")
-            //{
-            //    Timestamp = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc),
-
-            //    Accuracy = (float)0.5,
-            //};
-
-
-            //await tableClient.UpsertEntityAsync((ExperimentResult)results);
-
         }
 
         public async Task<byte[]> UploadResultFile(string fileName, byte[] data)
         {
-            BlobContainerClient container = new BlobContainerClient(this.config.StorageConnectionString, "outblobcontainer-1");
+            BlobContainerClient container = new BlobContainerClient(this.config.StorageConnectionString, this.config.ResultContainer);
             await container.CreateIfNotExistsAsync();
 
             try

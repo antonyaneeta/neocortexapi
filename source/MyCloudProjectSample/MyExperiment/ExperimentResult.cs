@@ -43,8 +43,8 @@ namespace MyExperiment
         public string[] OutputFiles { get; set; }
         // Your properties related to experiment.
 
-        public double Accuracy { get; set; }
+        public double SerializedPredictorAccuracy { get; set; }
         public double NormalPredAccuracy { get; set; }
-        public string testedPrediction { get; set; }
+        public string TestedSequence { get; set; }
     }
 }

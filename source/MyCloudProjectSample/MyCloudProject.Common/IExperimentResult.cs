@@ -18,13 +18,15 @@ namespace MyCloudProject.Common
         DateTime? EndTimeUtc { get; set; }
 
         public long DurationSec { get; set; }
-        double Accuracy { get; set; }
+        public string InputFileUrl { get; set; }
+
+        public string[] OutputFiles { get; set; }
+        double SerializedPredictorAccuracy { get; set; }
         
         // the field to hold the normal Predictors accuracy for the test sequence we check
         double NormalPredAccuracy { get; set; }
 
-
-        public string testedPrediction { get; set; }
+        public string TestedSequence { get; set; }
 
     }
 
