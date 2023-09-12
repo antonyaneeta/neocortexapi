@@ -1,20 +1,28 @@
-# ML2223-9 Implement Serialization of HtmClassifier -Team Alpha - Azure Cloud Implementation
+# Azure Cloud Implementation ML22/23-9 Implement Serialization of HtmClassifier -Team Alpha - 
 
-Aim of this Azure Cloud implementation of Software Enginenering project to be up and running in Cloud enviornment.
-For this we use the Docker image dpeloyment in Azure Containers in Cloud.
+Aim of this Azure Cloud implementation of Software Enginenering project to have the project to be up and running in Cloud enviornment.
+For this we use the Docker image dpeloyment in to Azure Containers in Cloud.
 The Serialization feature we implemented in HTMClassifier class together withth Deserialization feature added is verified here and compared with other Classifier class using Multisequnce learnign method.Finally the Prediction accuracy for Normal Predictor and the New serialized HTMClassifer predictor is evaluated to be same and hence the prrof.
-The Enire AzureCloud Project is created as a Docker image. This is Deployed to Azure Container Registry Repository, and then Run in Cloud.
+The Entire AzureCloud Project is created as a Docker image. This is Deployed to Azure Container Registry Repository, and then Run in Cloud.
 
-
-
-
-The Serialization of HTMClassifier is implemented with this Project.
-The Newly intorduced Serilaize Deserialize method works towards the goal of the Project .
-The Methods are unit tested and Documneted in https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/Implement%20Serialisation%20of%20HTMClassifier.pdf   
+The Serialization of HTMClassifier is implemented with SE Project.
+The neewly intorduced Serilaize and Deserialize method works  as outcome of the Project .
+The two new features are unit tested and Documneted in https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/Implement%20Serialisation%20of%20HTMClassifier.pdf   
 
 
 ## Cloud Project Structure
 
+[My CloudProject](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyCloudProject/Program.cs)
+
+[Cloud Experiment](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyExperiment/Experiment.cs)
+
+[RunMultiSequnceLearningExperiment()](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyExperiment/InvokeMultisequenceLearning.cs#L21)
+
+[Download Azure Input files](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyExperiment/AzureStorageProvider.cs#L34)
+
+[Upload Experiment Result to Azure Table](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyExperiment/AzureStorageProvider.cs#L73)
+
+[Docker file for image ](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyCloudProject/Dockerfile)
 
 The Azure Cloud Project availible running in Azure cloud as a Docker image running, with the folloing steps.
 
