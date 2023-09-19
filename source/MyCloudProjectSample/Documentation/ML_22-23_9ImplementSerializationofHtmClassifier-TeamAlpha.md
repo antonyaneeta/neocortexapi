@@ -24,13 +24,7 @@ The two new features are unit tested and Documneted in https://github.com/Univer
 
 [Docker file for image ](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyCloudProject/Dockerfile)
 
-The Azure Cloud Project availible running in Azure cloud as a Docker image running, with the folloing steps.
-
-Use this file to describe your experiment.
-This file is the whole documentation you need.
-It should include images, best with relative path in Documentation. For Example "/pic/image.png"  
-Do not paste code-snippets here as image. Use rather markdoown (MD) code documentation.
-For example:
+The Azure Cloud Project availible running in Azure cloud as a Docker image running, with the following steps.
 
 ~~~csharp
  private static Tuple<List<KeyValuePair<String, String>>,double,double> PredictNextElement(Predictor predictor, double[] testItem, Predictor serPredictor)
@@ -65,23 +59,39 @@ For example:
 ~~~
 
 
+
+
 ## What is your experiment about
 
-Our Project: Validate the Serialization and Deserialization Feature in the HTMClassifier Class by checking Predicted Elements for a given sequence.
+Our Project: Validate the Serialization and De-serialization Feature implemented in the HTMClassifier Class by checking Multisequnce learning and Predicted next Elements for a given sequence.
 Azure Cloud Project: The implemented SErialization is validated using Multisequnce learning method and the 
 SE Project Documentation can be found in - https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/Implement%20Serialisation%20of%20HTMClassifier.pdf   
 Readme.md file availiiable about THE SE project can be found here :- https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/team_alpha/MySEProject/Documentation/README.md   
 
+
+
+
+
+
+
+
 1. What is the **input**?
-The input for Multisequnce learning experiment is a .csv file containing the sequnce with which we indent to train the HTMCLassifier class.
+    a.The input for Multisequnce learning experiment is a sampleinputsequnce.csv file containing the sequnce with which we input to the MultisequnceLearning Experiment.
+    b.The Test sequence is also fetched from Azure blob storage.(Used as testing the prediction of next element from the HTMCLassifier)
 
 2. What is the **output**?
 Oputput of the Multisequnce learning experiment is Predicting the Next element after the learning is done. 
 We calculate the Predictor accuracy with both normal predictor and also a Serialized predictor
-This easblishes that the newly implemented HTMClassifier Serialization is correct and matching with normal predicotr class.
+##This easblishes that the newly implemented HTMClassifier Serialization is correct and matching with normal predicotr class.
 
-a. The utput of a  serialized output .txt file in each experiment saved to the Azure output container.
-b. THe Important 
+
+Result of the Experiment :
+The predictor accuracy of both normal and SerializedPredictor is checked and found to be equal and hence the proof.
+
+
+a.This is saved to Azure Table with Proper ExperimentId and associated , testsequnce tested, and SerializedAccuracy and Normal Accuracy.
+b.Also as an output, a serialized output.txt file in each experiment saved to the Azure output container . 
+
 
 3. How our algorithm works:
 
@@ -100,7 +110,30 @@ b. THe Important
             .
 ~~~
 
-  c) Later
+  c) As Next step 
+~~~csharp
+              #region  The Prediction of next element for Normal Predictor and a HTMClassifierSeialized Predicotr logic below.
+
+            // below code we tet he prediction with the test downloaded from Azure container
+            //ie. we check for each PredictNextElement in the TestValidation List 
+
+            // These testItem are used to see how the prediction works.
+            // By providing more elements to the prediction, the predictor delivers more precise result.
+
+
+            var acc = trainingData.TestValidation
+             .Select(seq => {
+
+                 var predictionResult = PredictNextElement(predictor, seq, serializedPredictor);
+                 List<double> accuracyList = new List<double>();
+                 accuracyList.Add(predictionResult.Item2);
+                 accuracyList.Add(predictionResult.Item3);
+                 return new KeyValuePair<string,List<double>>(string.Join(", ", seq),accuracyList);
+                            
+             }).ToList();
+
+            #endregion
+~~~
 
 
 ## How to run our Azure Cloud Experiment
