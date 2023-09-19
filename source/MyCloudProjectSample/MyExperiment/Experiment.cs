@@ -153,7 +153,7 @@ namespace MyExperiment
                         //Correctly uploading the response accuracy of the predictor of the serialised one as well as the original one
                         await storageProvider.UploadExperimentResult(results);
 
-                        this.logger?.LogInformation($"Uploaded the Experiment result to Azure Table : \n ");
+                        this.logger?.LogInformation($"Uploaded the Experiment result to Azure Table  \n ");
 
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }
