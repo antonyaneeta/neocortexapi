@@ -20,7 +20,7 @@ namespace MyCloudProject.Common
         public long DurationSec { get; set; }
         public string InputFileUrl { get; set; }
 
-        public string[] OutputFiles { get; set; }
+        public string OutputFiles { get; set; }
         double SerializedPredictorAccuracy { get; set; }
         
         // the field to hold the normal Predictors accuracy for the test sequence we check

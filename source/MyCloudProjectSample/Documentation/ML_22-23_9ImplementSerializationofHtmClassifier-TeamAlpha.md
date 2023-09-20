@@ -35,6 +35,9 @@ https://github.com/UniversityOfAppliedSciencesFrankfurt/se-cloud-2022-2023/blob/
 [Docker file for image ](https://github.com/antonyaneeta/neocortexapi/blob/7680dcd535d58381706212faa75dfbe3d57d4ae0/source/MyCloudProjectSample/MyCloudProject/Dockerfile)
 
 The Azure Cloud Project availible running in Azure cloud as a Docker image in Container Repo.
+##
+[Configuration file with connnection string](../MyCloudProject/appsettings.json)
+#
 
 ## Azure Links
 
@@ -60,7 +63,7 @@ Azure Cloud Project: The implemented Serialization is validated using Multisequn
 1. What is the **input**?<br/>
     a.The input for Multisequnce learning experiment is a sampleinputsequnce.csv file containing the sequnce with which we input to the MultisequnceLearning Experiment.<br/> [input sequence file](AzureCloudProject/training-files/sampleinputseq.csv) <br/><br/>
     b.The Test sequence is also fetched from Azure blob storage.(Used as testing the prediction of next element from the HTMCLassifier)<br/> [input-test sequence sample](AzureCloudProject/training-files/TestValidationInput.txt)
-<br/> [input-test sequence sample](AzureCloudProject/training-files/TestValidation3Input.txt) 
+<br/> [input-test sequence sample2](AzureCloudProject/training-files/TestValidation3Input.txt) 
 
 
 
@@ -276,7 +279,9 @@ xtRLaU37ww09FWh25uD08ZrH4+yxz2txOC2yzyKRbU+ACRBs/qKv
 <br/>
 
 <br/>
+Console output in azure container instance
 
+![Console output in azure container instance](Project-Azure-ContainerInstance-Console.png)
 <br/>
 <br/>
 
@@ -299,6 +304,7 @@ xtRLaU37ww09FWh25uD08ZrH4+yxz2txOC2yzyKRbU+ACRBs/qKv
 
 ![Alt text](team-alpha-trigger-queue.png)
 
+![Alt text](teamalpha-queue-addition.png)
 
 <br/>
 
@@ -353,6 +359,8 @@ Corresponding to each experiment run and the number of testing sequnce we used t
 |Description | Description about the Serialization Multisequnce experiment |
 |SerializedPredictorAccuracy |Accuracy of predicting next elemnt and sequnce for the HTMClassiferPredictor |
 |NormalPredAccuracy | Accuracy of predicting next elemnt and sequnce for the Normal Predictor. |
+|OutputFiles |reference to the serialized output.txt saved as part of experiment for future refernce |
+|InputFileUrl | reference the input sequnce file used in experiment |
 
 <br/>
 <br/>
@@ -362,3 +370,37 @@ Corresponding to each experiment run and the number of testing sequnce we used t
 <br/>
 ![ Result Table-part1](teamalpha-result-table-1st.png)
  
+##
+# Docker commands and operations to create and push docker image
+~~~bat
+
+#Steps to Docker image to our cloud project
+docker build -f "C:\Users\docker file location\Dockerfile" --force-rm -t mycloudproject
+
+#list docker images
+docker images
+~~~
+
+##
+# Azure commands tag and push docker image to Azure Cloud
+~~~bat
+az login
+
+#login using proper tennant ID to access correct subscription
+az login --tenant 45ad6974-849d-4d24-8584-456affacc0f8
+
+#azure login to container registry in the correct REsourse Group
+#Already created Resourse-Group in Azure UI Portal, also a Container REgistry , and Blob #Container in the same RGroup , Will need to crete a Container instance to run the image in the Container Repository.
+
+az acr login --name ccprojectc
+
+
+#tag appropriate name f or image 
+docker tag mycloudproject:latest cloudprojectteamalpha.azurecr.io/mycloudproject:v1
+docker tag mycloudproject:latest ccprojectc.azurecr.io/teamalphamycloudproject:v1
+
+#push to container registry repository
+docker push cloudprojectteamalpha.azurecr.io/mycloudproject:v1
+docker push ccprojectc.azurecr.io/teamalphamycloudproject:v1
+~~~
+##

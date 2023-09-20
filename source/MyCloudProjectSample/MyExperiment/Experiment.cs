@@ -89,7 +89,7 @@ namespace MyExperiment
                 response.Name = this.exerimentRequest.Name;
                 response.Description = this.exerimentRequest.Description;
                 response.ExperimentId = request.ExperimentId;
-                response.OutputFiles = new string[]{inputFile};
+                response.OutputFiles = outputFileName ;
                 response.InputFileUrl = inputFile;
                 response.Timestamp = DateTime.Now;
 
