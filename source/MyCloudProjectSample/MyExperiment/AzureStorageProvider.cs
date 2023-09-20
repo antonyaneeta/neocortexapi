@@ -107,7 +107,10 @@ namespace MyExperiment
                         EndTimeUtc = results[i].EndTimeUtc,
                         ExperimentId = results[i].ExperimentId,
                         Name = results[i].Name,
-                        Description = results[i].Description
+                        Description = results[i].Description,
+                        OutputFiles = results[i].OutputFiles,   
+                        InputFileUrl = results[i].InputFileUrl
+                        
 
                     };
                     suffixNum++;
