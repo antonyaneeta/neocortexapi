@@ -72,9 +72,13 @@ Azure Cloud Project: The implemented Serialization is validated using Multisequn
 Oputput of the Multisequnce learning experiment is Predicting the Next element after the learning is done. 
 We calculate the Predictor accuracy with both normal predictor and also a Serialized predictor
 <br/>
+
 **This easblishes that the newly implemented HTMClassifier Serialization is correct and matching with normal predicotr class.**
+
+<br/>  [Console Output showing Accuracy and prediction sequnce](AzureCloudProject/Consoleoutput/Console-Output-3-test-predictions-correct.txt) 
+
 <br/>
-  - [Console Output showing Accuracy and prediction sequnce](AzureCloudProject/Consoleoutput/Console-Output-3-test-predictions-correct.txt)
+
 ~~~
 -------------Sequence to test: 8, 1, 2-----------------
 
@@ -97,6 +101,7 @@ HTMClassifier serialised Predictor SerializedPredictorAccuracy -->100
 Azure.Storage.Blobs.Models.BlobProperties
 Uploaded to Table Storage successfully
 ~~~
+
 
  **Result of the Experiment** :
 The predictor accuracy of both normal and SerializedPredictor is checked and found to be equal and hence the proof.
