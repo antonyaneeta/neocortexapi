@@ -241,8 +241,8 @@ CodeRef:1
             return acc;
         }
 ~~~   
-CodeRef:2
-´´´csharp
+CodeRef:2   
+~~~csharp
  private Predictor RunExperiment(int inputBits, HtmConfig cfg, EncoderBase encoder, Dictionary<string, List<double>> sequences,string outputFileName, out Predictor serializedPredictor)
         {
        .
@@ -272,7 +272,7 @@ CodeRef:2
             //returns a normal Predictor
             return new Predictor(layer1, mem, cls);
         }
-´´´
+~~~
    
    CodeRef:3
 ~~~csharp
