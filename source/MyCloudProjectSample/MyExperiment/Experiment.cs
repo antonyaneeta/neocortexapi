@@ -1,18 +1,10 @@
 ﻿using Azure.Storage.Queues;
 using Azure.Storage.Queues.Models;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MyCloudProject.Common;
-using NeoCortexApi;
-using NeoCortexApi.Classifiers;
-using NeoCortexApi.Entities;
-
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -28,161 +20,161 @@ namespace MyExperiment
     public class Experiment : IExperiment
     {
         private IStorageProvider storageProvider;
-
         private ILogger logger;
-
         private MyConfig config;
-
-        private IExerimentRequestMessage exerimentRequest;
+        private IExerimentRequestMessage experimentRequest;
         private ExerimentRequestMessage request;
-        //
+
+        /// <summary>
+        /// Initializes a new instance of the Experiment class.
+        /// </summary>
+        /// <param name="configSection">The configuration section containing settings for the experiment.</param>
+        /// <param name="storageProvider">The storage provider used for accessing storage resources.</param>
+        /// <param name="log">The logger used for logging experiment-related information.</param>
+        /// <param name="expReq">The experiment request message containing details of the experiment.</param>
         public Experiment(IConfigurationSection configSection, IStorageProvider storageProvider, ILogger log, IExerimentRequestMessage expReq)
         {
             this.storageProvider = storageProvider;
             this.logger = log;
-            this.exerimentRequest=expReq;
-            config = new MyConfig();
+            this.experimentRequest = expReq;
+            // Bind the configuration section to the config object
+            this.config = new MyConfig();
             configSection.Bind(config);
+
         }
 
-
-        public Task<List<IExperimentResult>> Run(string inputFile,string testSequences,string outputFileName)
+        /// <summary>
+        /// Runs the experiment with the provided input data and test sequences.
+        /// </summary>
+        /// <param name="inputFile">The path to the input CSV file.</param>
+        /// <param name="testSequences">The test sequences for prediction.</param>
+        /// <param name="outputFileName">The name of the output file for serialized results.</param>
+        /// <returns>A task representing the list of experiment results.</returns>
+        public Task<List<IExperimentResult>> Run(string inputFile, string testSequences, string outputFileName)
         {
-
-
-            // TODO read file
-
-            // YOU START HERE WITH YOUR SE EXPERIMENT!!!!
+            // Initialize a list to store experiment results
             List<IExperimentResult> resultList = new List<IExperimentResult>();
-            ExperimentResult res = new ExperimentResult(this.config.GroupId, null);
-
+            // Create an initial experiment result object
+            ExperimentResult res = new ExperimentResult(config.GroupId, null);
             res.StartTimeUtc = DateTime.UtcNow;
 
-
-            // read csv file for input sequence to be passed to experiment
+            // read csv file for input file to get sequence for experiment
             List<double[]> pdValues;
-            
-            // input double array to be passed to RunMultisequence learningExp to the the predict method
-
             pdValues = ReadCsvValues(inputFile);
 
+            // Run the Multisequence Learning Experiment predict sequence for the HTMSerialize class below
+            var experimentResult = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues, testSequences, outputFileName);
 
-            //Learn your experiment code below
-            // The actual learning and predict method call of our HTM Serialize below
-            var v = InvokeMultisequenceLearning.RunMultiSequenceLearningExperiment(pdValues, testSequences,outputFileName);
-
-            //Get List of results for multiple sequence and loop as result to azure table result
-
-            foreach (var item in v)
+            // Process the experiment results to upload azure table result
+            foreach (var item in experimentResult)
             {
-                ExperimentResult response = new ExperimentResult(this.config.GroupId, null);
+                // Create a new experiment result object for each result
+                ExperimentResult response = new ExperimentResult(config.GroupId, null);
                 double accuracy = item.Value[0];
                 double normalPredictorAcc = item.Value[1];
                 string testedPredList = item.Key;
+
+                // Set experiment result properties
                 response.EndTimeUtc = DateTime.UtcNow;
                 var elapsedTime = response.EndTimeUtc - res.StartTimeUtc;
-
                 response.SerializedPredictorAccuracy = accuracy;
                 response.NormalPredAccuracy = normalPredictorAcc;
                 response.TestedSequence = testedPredList;
                 response.DurationSec = (long)elapsedTime.GetValueOrDefault().TotalSeconds;
-                response.Name = this.exerimentRequest.Name;
-                response.Description = this.exerimentRequest.Description;
+                response.Name = experimentRequest.Name;
+                response.Description = experimentRequest.Description;
                 response.ExperimentId = request.ExperimentId;
-                response.OutputFiles = outputFileName ;
+                response.OutputFiles = outputFileName;
                 response.InputFileUrl = inputFile;
                 response.Timestamp = DateTime.Now;
 
-                // add each item to Exp Result list
+                // Add each result item to the experiment result list
                 resultList.Add(response);
             }
-
-
-            //res.SerializedPredictorAccuracy = accuracy;
-            //res.OutputFiles("SerialiseOutput.txt");
-
-
-
-            return Task.FromResult (resultList); // Returning the Experiment result for Azure result Table Upsert
+            // Return the list of experiment results as a completed task
+            return Task.FromResult(resultList);
         }
 
 
         /// <summary>
-        /// Queue listener and the Experiment execution.
+        /// Runs the queue listener asynchronously.
         /// </summary>
-        /// <param name="cancelToken"></param>
-        /// <returns></returns>
+        /// <param name="cancelToken">Cancellation token to stop the listener.</param>
         public async Task RunQueueListener(CancellationToken cancelToken)
         {
+            // Initialize a QueueClient for processing messages from a queue
+            QueueClient queueClient = new QueueClient(config.StorageConnectionString, config.Queue);
 
-
-            QueueClient queueClient = new QueueClient(this.config.StorageConnectionString, this.config.Queue);
-
-            
-            while (cancelToken.IsCancellationRequested == false)
+            // Continuously process messages until cancellation is requested
+            while (!cancelToken.IsCancellationRequested)
             {
-                
+                // Receive a message from the queue
                 QueueMessage message = await queueClient.ReceiveMessageAsync();
-
                 if (message != null)
                 {
                     try
                     {
-
+                        // Convert the message body to text
                         string msgTxt = Encoding.UTF8.GetString(message.Body.ToArray());
+                        // Log the received message
+                        logger?.LogInformation($"Received the message from Azure Container Queue:\n{msgTxt}");
 
-                        this.logger?.LogInformation($"Received the message form Azure Container Queue: \n {msgTxt}");
-
-                        // Received Queue ms is mapped to the Experiment Request POJO
+                        // Deserialize the received message into an Experiment Request object
                         request = JsonSerializer.Deserialize<ExerimentRequestMessage>(msgTxt);
 
-                        //storageProvider.DownloadInputFile below is the actual code to download the input training files from Azure Containers.
-                        var inputFile = await this.storageProvider.DownloadInputFile(request.InputFile);
-                        var testSequenceFile = await this.storageProvider.DownloadInputFile(request.TestInputFile);
-                        //get a unique output file name for serialized txt saving in the experiment
+                        // Download input files from Azure Containers
+                        var inputFile = await storageProvider.DownloadInputFile(request.InputFile);
+                        var testSequenceFile = await storageProvider.DownloadInputFile(request.TestInputFile);
+                        // Get a unique output file name for serialized text saving in the experiment
                         string outputFileName = createOutputFile();
 
-                        //The Actual Experiment execution call
-                        List<IExperimentResult> results = await this.Run(inputFile, testSequenceFile, outputFileName);
+                        // Execute the actual experiment
+                        List<IExperimentResult> results = await Run(inputFile, testSequenceFile, outputFileName);
 
-
-                        //uploaded the serialised output text file for the experiment to the blob
+                        // Upload the serialized output text file for the experiment to blob storage
                         await storageProvider.UploadResultFile(outputFileName, null);
-
-
-                        //Correctly uploading the response accuracy of the predictor of the serialised one as well as the original one
+                        // Upload the accuracy of the predictor from the experiment to Azure Table
                         await storageProvider.UploadExperimentResult(results);
 
-                        this.logger?.LogInformation($"Uploaded the Experiment result to Azure Table  \n ");
-
+                        // Log success and remove the processed queue message
+                        logger?.LogInformation("Uploaded the Experiment result to Azure Table");
                         await queueClient.DeleteMessageAsync(message.MessageId, message.PopReceipt);
                     }
                     catch (Exception ex)
                     {
-                        this.logger?.LogError(ex, "TODO...");
+                        // Log errors during experiment execution
+                        logger?.LogError(ex, "Something went wrong while running the experiment");
                     }
                 }
                 else
                 {
+                    // Wait for a short time if the queue is empty
                     await Task.Delay(500);
                     logger?.LogTrace("Queue empty...");
-                    
                 }
             }
 
-            this.logger?.LogInformation("Cancel pressed. Exiting the listener loop.");
+            // Log when cancellation is requested and exit the listener loop
+            logger?.LogInformation("Cancel pressed. Exiting the listener loop.");
         }
 
+
+        /// <summary>
+        /// A simple method to create a unique output file name with dateTime for each experiment run.
+        /// </summary>
+        /// <returns></returns>
         private static string createOutputFile()
         {
-
             //Create a unique name for the output serialized file we keep for future refence in each experiment.
             return "output" + $"{DateTime.Now:yyyy-MM-dd_HH-mm-ss-fff}" + ".txt";
         }
 
-
-
-        #region the region userd to read csv data to sequnc array as input for the Multisequnce learnign experiment
+        /// <summary>
+        /// method to read the csv input file adn generate a readable format and hence to be input as the sequence for mutisequence experiment
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        #region the region userd to read csv data to sequenc array as input for the Multisequnce learning experiment
         private List<double[]> ReadCsvValues(string filePath)
         {
             double pdValue;
@@ -192,9 +184,7 @@ namespace MyExperiment
             {
                 var values = fileListLine.Split(';')
                 .Select(str => double.TryParse(str, out pdValue) ? pdValue : 0);
-
                 pdValues.Add(values.ToArray());
-
             }
             return pdValues;
         }

@@ -5,6 +5,7 @@ using System.Text;
 
 namespace MyExperiment
 {
+    // Represents a message containing experiment request information.
     public class ExerimentRequestMessage : IExerimentRequestMessage
     {
         public string ExperimentId { get; set; }
@@ -15,13 +16,3 @@ namespace MyExperiment
     }
 }
 
-
-/*
- 
- {
-    "ExperimentId": "sasa",
-    "InputFile":"sasss",
-
-}
- 
- */ 

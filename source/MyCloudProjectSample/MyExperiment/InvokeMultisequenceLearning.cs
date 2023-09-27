@@ -15,96 +15,64 @@ namespace MyExperiment
     internal class InvokeMultisequenceLearning
     {
         /// <summary>
-        /// RunMultisequence experiment to test serialization of HTM Classifier
+        /// Runs a multi-sequence learning experiment.
         /// </summary>
-        /// <param name="input"></param>
+        /// <param name="input">A list of input sequences.</param>
+        /// <param name="testSequences">The path to the test sequences file.</param>
+        /// <param name="outputFileName">The name of the output file for results.</param>
+        /// <returns>A list of key-value pairs, where the key is a sequence and the value is a list of accuracies.</returns>
         public static List<KeyValuePair<string, List<double>>> RunMultiSequenceLearningExperiment(List<double[]> input, string testSequences,string outputFileName)
         {
+            // Dictionary to store sequences
             Dictionary<string, List<double>> sequences = new Dictionary<string, List<double>>();
 
-            // old hardcoded sample sequences below
+            //for reference,sample sequence added to Dictionary to be like below
             //sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 0.0, 2.0, 3.0, 4.0, 5.0, 6.0, 5.0, 4.0, 3.0, 7.0, 1.0, 9.0, 12.0, 11.0, 12.0, 13.0, 14.0, 11.0, 12.0, 14.0, 5.0, 7.0, 6.0, 9.0, 3.0, 4.0, 3.0, 4.0, 3.0, 4.0 }));
             //sequences.Add("S2", new List<double>(new double[] { 0.8, 2.0, 0.0, 3.0, 3.0, 4.0, 5.0, 6.0, 5.0, 7.0, 2.0, 7.0, 1.0, 9.0, 11.0, 11.0, 10.0, 13.0, 14.0, 11.0, 7.0, 6.0, 5.0, 7.0, 6.0, 5.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0 }));
-            // sequences.Add("S1", new List<double>(new double[] { 0.0, 1.0, 2.0, 3.0, 4.0, 2.0, 5.0, }));
-            // sequences.Add("S2", new List<double>(new double[] { 8.0, 1.0, 2.0, 9.0, 10.0, 7.0, 11.00 }));
 
-
-            // Create a new sequence "S1" using the input form  Azure  storage container data.
+            // Create sequences from input data
             for (int i = 0; i < input.Count; i++)
             {
                 sequences.Add("S"+(i+1), new List<double>(input[i]));
             }
 
-            // These testItem are used to see how the prediction works.
-            // Predictor is traversing the testItem element by element. 
-            // By providing more elements to the prediction, the predictor delivers more precise result.
+            // Read test sequences from a file
             var text = File.ReadAllText(testSequences, Encoding.UTF8);
             var trainingData = JsonSerializer.Deserialize<TestData>(text);
 
 
             // Prototype for building the prediction engine.
+            // Initialize the experiment and get the predictor
             MultiSequenceLearning experiment = new MultiSequenceLearning();
             Predictor serializedPredictor;
-
-            // as a "out" param we pass get also serializedPredictor for the New HTMClassifier class.
             var predictor = experiment.Learn(sequences, outputFileName, out serializedPredictor);
 
-            #region old unused code
-
-            //predictor.Reset();
-            //serializedPredictor.Reset();
-            // Tuple<List<KeyValuePair<string, string>>, double,double> tuple = null;
-            //tuple=PredictNextElement(predictor, list1, serializedPredictor);
-
-            //List<KeyValuePair<string, List<double>>> kvp = new List<KeyValuePair<string, List<double>>> ();
-
-            //foreach (var testInp in trainingData.TestValidation)
-            //{
-            //    predictor.Reset();
-            //    serializedPredictor.Reset();
-            //    tuple = PredictNextElement(predictor, testInp, serializedPredictor);
-            //    List<KeyValuePair<string, string>> item1 = tuple.Item1;
-
-            //    kvp.Add(new KeyValuePair<string, float>(string.Join(", ", testInp), tuple.Item2));
-
-            //}
-            #endregion
-
-
-            #region  The Prediction of next element for Predictor and ´new HTMClassifierSeialized Predicotr logic below.
-
-            // below code we tet he prediction with the test downloaded from Azure container
-            //ie. we check for each predictionItem in the accuracyList 
-
-            // These testItem are used to see how the prediction works.
-            // Predictor is traversing the testItem element by element. 
-            // By providing more elements to the prediction, the predictor delivers more precise result.
-
-
+            // Predict the next element for each test sequence
             var acc = trainingData.TestValidation
              .Select(seq => {
-
                  var predictionResult = PredictNextElement(predictor, seq, serializedPredictor);
                  List<double> accuracyList = new List<double>();
-                 accuracyList.Add(predictionResult.Item2);
+                 accuracyList.Add(predictionResult.Item2);//Predictor accuracy of HTClassifier serialized predictor
                  accuracyList.Add(predictionResult.Item3);
-                 return new KeyValuePair<string,List<double>>(string.Join(", ", seq),accuracyList);
-                            
+                 return new KeyValuePair<string,List<double>>(string.Join(", ", seq),accuracyList);                           
              }).ToList();
 
-            #endregion
-
+            //a list of key-value pairs, where the key is a sequence and the value is a list of accuracies
             return acc;
         }
 
-        #region the PredictNext element to compare if both the serialized Predictor and normal Predictor has same prediction.
+        #region the PredictNext element to compare if both the Predictor instance for a HTMCLassifier Serialized one and normal Predictor instance has same predictions.
+ 
         /// <summary>
-        /// This is now returning the serialized Predictors accuracy in predicting the next element correct as normal Predictor
+        /// Predicts the next elements for a given sequence using two predictors.
         /// </summary>
-        /// <param name="predictor"></param>
-        /// <param name="testItem"></param>
-        /// <param name="serPredictor"></param>
-        /// <returns></returns>
+        /// <param name="predictor">The normal predictor.</param>
+        /// <param name="testItem">The input sequence to test.</param>
+        /// <param name="serPredictor">The serialized predictor.</param>
+        /// <returns>
+        /// A tuple containing a list of key-value pairs representing predictions, the serialized predictor accuracy,
+        /// and the normal predictor accuracy.
+        /// </returns>
         private static Tuple<List<KeyValuePair<String, String>>,double,double> PredictNextElement(Predictor predictor, double[] testItem, Predictor serPredictor)
 
         {
@@ -128,17 +96,13 @@ namespace MyExperiment
                 serPredictor.Reset();
                 var resSerializedPred = serPredictor.Predict(item);
 
-
-
                 // Thie section below loops on the prediction for each element in the item for htmClassifier serialized predictor
-
                 if (resSerializedPred.Count > 0)
                 {
                     foreach (var pred1 in resSerializedPred)
                     {
                        //Console.WriteLine($"{pred1.PredictedInput} - {pred1.Similarity}");
                     }
-
                     var tokens = resSerializedPred.First().PredictedInput.Split('_');
                     var tokens2 = resSerializedPred.First().PredictedInput.Split('-');
                     // to print out he predicted sequence use line below
@@ -146,7 +110,6 @@ namespace MyExperiment
                     listofPredictions.Add(new KeyValuePair<String, String>($"item name : {item} : for serialized predictor " + tokens[0], tokens2.Last()));
 
                     matchCount1 += 1;
-                    //Console.WriteLine(matchCount1 + "match count in serialized updated");
                     
                 }
                 else
@@ -154,16 +117,12 @@ namespace MyExperiment
                     Console.WriteLine("Nothing predicted for serialized predictor  :(");
                 }
                 totalCount1 += 1;
-                //Console.WriteLine(totalCount1 + "total count in serialized updated");
 
 
-                //try to get similarity of each element of two predictors
-
+                //Print similarity of each element of two predictors
                 if (res.Count > 0 && resSerializedPred.Count > 0)
                 {
-
                     var nextElementToken = resSerializedPred.First().PredictedInput.Split('-');
-
                     var nextElementNormaltoken = res.First().PredictedInput.Split('-');
 
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -174,7 +133,6 @@ namespace MyExperiment
                     Console.ResetColor();
                 }
 
-
                 if (res.Count > 0)
                 {
                     foreach (var pred in res)
@@ -183,15 +141,11 @@ namespace MyExperiment
                     }
 
                     var similarity = res.First().Similarity;
-
                     var tokens = res.First().PredictedInput.Split('_');
                     var tokens2 = res.First().PredictedInput.Split('-');
                     // to print out he predicted sequence use line below
                     // Console.WriteLine($"Normal Predictor--> Predicted Sequence: {tokens[0]}, predicted next element {tokens2.Last()}");
-
                     matchCount += 1;
-                    //Console.WriteLine(totalCount1 + "match count in normal predictor");
-
                     listofPredictions.
                         Add(new KeyValuePair<String, String>($"item name : {item} : for normal predictor " + tokens[0], tokens2.Last()));
                 }
@@ -200,14 +154,9 @@ namespace MyExperiment
                     Console.WriteLine("Nothing predicted for normal predictor :(");
                 }
                     totalCount += 1;
-                //Console.WriteLine(totalCount1 + "total count in normal predictor "); 
-
-              
-
             }
 
-
-            #region the region is helping DEBUG and see the next element predictions for each element in the testing item 
+            #region Cleanup- This region is helping DEBUG and console print the next element predictions for each element in the testing item 
             //Commented off now to have a good console print
             //foreach (KeyValuePair<string, string> kvp in listofPredictions)
             //{
@@ -228,9 +177,7 @@ namespace MyExperiment
 
 
             #region Prediction Accuracy Calculation below .
-            // Calculate predictorAccuracy
-
-
+            //Calculate predictorAccuracy
             double predictorAccuracy = matchCount * 100 / (double)totalCount;
             predictorAccuracy= Math.Round(predictorAccuracy, 2);
 
@@ -238,20 +185,23 @@ namespace MyExperiment
             serialisedPredAccuracy=Math.Round(serialisedPredAccuracy, 2);
             #endregion
 
-            // Print the accuracy for the sequnce tested here
+            // Print the accuracy for the sequence tested here
             Console.WriteLine("\nFor the List of [" + (string.Join(", ", testItem)) + "] the accuracy calculated as below: ");
             Console.WriteLine("Normal Predictor Accuracy -->"+ predictorAccuracy);
             Console.WriteLine("HTMClassifier serialised Predictor SerializedPredictorAccuracy -->"+ serialisedPredAccuracy);
-
-            //Console.WriteLine(Boolean.Equals(serialisedPredAccuracy, predictorAccuracy));
             Console.WriteLine("------------------------------");
             
             return Tuple.Create(listofPredictions,serialisedPredAccuracy, predictorAccuracy);
         }
     }
     #endregion
+
+
     public class TestData
     {
+        /// <summary>
+        /// Method to Loop and provide the test sequnce from an array of elements.
+        /// </summary>
         public List<double[]> TestValidation { get; set; } = new();
     }
 

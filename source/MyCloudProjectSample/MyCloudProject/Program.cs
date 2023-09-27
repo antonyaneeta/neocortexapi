@@ -10,7 +10,7 @@ namespace MyCloudProject
     class Program
     {
         /// <summary>
-        /// Your project ID from the last semester.
+        /// Our project ID from the last semester- ML22/23-9 Implement Serialization of HtmClassifier -Team Alpha
         /// </summary>
         private static string projectName = "ML22/23-9 Implement Serialization of HtmClassifier -Team Alpha";
         private static string projectDesc = "Use the HTMClassifier SerialializedPredictor to predict next element of the test sequence with accuracy" +
@@ -32,13 +32,11 @@ namespace MyCloudProject
             //init configuration
             ///-------------------------------
             var cfgRoot = Common.InitHelpers.InitConfiguration(args);
-
             var cfgSec = cfgRoot.GetSection("MyConfig");
 
             // InitLogging
             var logFactory = InitHelpers.InitLogging(cfgRoot);
             var logger = logFactory.CreateLogger("Train.Console");
-
             logger?.LogInformation($"{DateTime.Now} -  Started experiment: {projectName}");
 
             IStorageProvider storageProvider = new AzureStorageProvider(cfgSec);
@@ -48,7 +46,7 @@ namespace MyCloudProject
             expReq.Name = projectName;
             expReq.Description = projectDesc;
 
-            ///create Experiment and pass all required and additional config params
+            ///new Instance of Experiment and pass all required and additional config params
             Experiment experiment = new Experiment(cfgSec, storageProvider, logger ,expReq);
             
             await experiment.RunQueueListener(tokeSrc.Token);

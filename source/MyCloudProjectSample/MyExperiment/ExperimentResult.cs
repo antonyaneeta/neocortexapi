@@ -7,7 +7,6 @@ using System.Text;
 
 namespace MyExperiment
 {
-
     public class ExperimentResult : ITableEntity, IExperimentResult
     {
         public ExperimentResult(string partitionKey, string rowKey)
@@ -15,34 +14,19 @@ namespace MyExperiment
             this.PartitionKey = partitionKey;
             this.RowKey= rowKey;
         }
-
-        public string PartitionKey { get; set; }
-        
-        public string RowKey { get; set; }
-       
-        public DateTimeOffset? Timestamp { get ; set ; }
-        
+        public string PartitionKey { get; set; }       
+        public string RowKey { get; set; }     
+        public DateTimeOffset? Timestamp { get ; set ; }    
         public ETag ETag { get; set; }
-
-
         public string ExperimentId { get; set; }
-
         public string Name { get; set; }
-
         public string Description { get; set; }
-
         public DateTime? StartTimeUtc { get; set; }
-
         public DateTime? EndTimeUtc { get; set; }
-
         public long DurationSec { get; set; }
-
         public string InputFileUrl { get; set; }
-
-        //
         public string OutputFiles { get; set; }
-        // Your properties related to experiment.
-
+        //properties related to experiment.
         public double SerializedPredictorAccuracy { get; set; }
         public double NormalPredAccuracy { get; set; }
         public string TestedSequence { get; set; }
