@@ -15,7 +15,8 @@ namespace UnitTestsProject
 
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void SerializeDictionarystringListIntArray()
+        [TestCategory("SerializeDictionaryValue-SequenceCheck")]
+        public void SerializeDictionaryStringListIntArray()
         {
             //Given
             HtmSerializer htm = new HtmSerializer();
@@ -35,13 +36,13 @@ namespace UnitTestsProject
 
             //When
             //Serialize and save in file.
-            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDictionarystringListIntArray)}.txt"))
+            using (StreamWriter sw = new StreamWriter($"ser_{nameof(SerializeDictionaryStringListIntArray)}.txt"))
             {
                 htm.SerializeDictionaryValue(keyValuesExpected, sw);
             }
 
             //deserialize from file to get result to Dictionary parameter
-            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDictionarystringListIntArray)}.txt"))
+            using (StreamReader sr = new StreamReader($"ser_{nameof(SerializeDictionaryStringListIntArray)}.txt"))
             {
                 while (sr.Peek() >= 0)
                 {

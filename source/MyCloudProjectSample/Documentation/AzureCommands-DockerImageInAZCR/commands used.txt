@@ -1,0 +1,56 @@
+#azure login and docker image creation
+az login
+
+az account show
+[
+  {
+    "cloudName": "AzureCloud",
+    "homeTenantId": "45ad6974-849d-4d24-8584-456affacc0f8",
+    "id": "184881e3-59d0-4ddb-b7e5-1124023718e1",
+    "isDefault": false,
+    "managedByTenants": [],
+    "name": "VS Enterprise For Students",
+    "state": "Disabled",
+    "tenantId": "45ad6974-849d-4d24-8584-456affacc0f8",
+    "user": {
+      "name": "aneeta.antony@stud.fra-uas.de",
+      "type": "user"
+    }
+  },
+  {
+    "cloudName": "AzureCloud",
+    "homeTenantId": "45ad6974-849d-4d24-8584-456affacc0f8",
+    "id": "d60f2036-12f5-499d-af22-ef3afc698896",
+    "isDefault": true,
+    "managedByTenants": [],
+    "name": "VS Enterprise for students (ddobric-msdn@outlook.de)",
+    "state": "Enabled",
+    "tenantId": "45ad6974-849d-4d24-8584-456affacc0f8",
+    "user": {
+      "name": "aneeta.antony@stud.fra-uas.de",
+      "type": "user"
+    }
+  }
+]
+
+
+
+#login using proper tennant ID to access correct subscription
+az login --tenant 45ad6974-849d-4d24-8584-456affacc0f8
+
+#azure login to container registry in the correct REsourse Group
+#Already created Resourse-Group in Azure UI Portal, also a Container REgistry , and Blob #Container in the same RGroup , Will need to crete a Container instance to run the image in the Container Repository.
+az acr login --name cloudprojectteamalpha
+az acr login --name ccprojectc
+
+
+#Steps to Docker image for cloud project
+docker build -f "C:\Users\docker file location\Dockerfile" --force-rm -t mycloudproject
+#list docker images
+docker images
+#tag appropriate name for image 
+docker tag mycloudproject:latest cloudprojectteamalpha.azurecr.io/mycloudproject:v1
+docker tag mycloudproject:latest ccprojectc.azurecr.io/teamalphamycloudproject:v1
+#push to container registry repository
+docker push cloudprojectteamalpha.azurecr.io/mycloudproject:v1
+

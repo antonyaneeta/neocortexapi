@@ -33,7 +33,7 @@ namespace NeoCortexApi.Classifiers
         /// The similarity between the SDR of  predicted cell set with the SDR of the input.
         /// </summary>
         public double Similarity { get; set; }
-    }
+        }
 
 
     /// <summary>
@@ -521,7 +521,7 @@ namespace NeoCortexApi.Classifiers
 
         #region Deserialize
         /// <summary>
-        /// Deserialize the Classifier Private fileds
+        /// Deserialize the Classifier Private fields and assigns them to the fields of the Class instance.
         /// </summary>
         /// <param name="sr"></param>
         /// <returns></returns>
@@ -585,61 +585,176 @@ namespace NeoCortexApi.Classifiers
 
         /// <summary>
         /// 
-        /// The deafault Equals is overide for HtmCLassifier parameters.
+        /// The default Equals is override for HtmClassifier parameters.
+        /// Ith carefully checks all conditions required for the Equality of two instances of the Classifier Object
+        /// The refence object and compared object is checked for null, checked for type compatibility, presence of each fields, 
+        /// also checking deep inside each complex type object (m_AllInputs) if all keys and Values in KVP are also matching .
+        /// If all conditions pass the objects are found Equal and returns true.
+        /// If any conditions fails then method returns false.
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
+            //Checks if the compared object is null or not
             if (obj == null)
                 return false;
+            //The type of objects compared here should be of type HTMClassifier or else equals fails
             if (typeof(HtmClassifier<TIN, TOUT>) != obj.GetType())
                 return false;
             HtmClassifier<TIN, TOUT> other = (HtmClassifier<TIN, TOUT>)obj;
             if (maxRecordedElements != other.maxRecordedElements)
                 return false;
-            if (m_AllInputs == null)
+
+            //check condition--> other.m_AllInputs  is null or empty and consequently with the first value 
+            if (other.m_AllInputs == null || other.m_AllInputs.Count <= 0)
             {
-                if (other.m_AllInputs != null)
+                //if m_AllInputs  has a value this means 2 instances not equal.
+                if (null != m_AllInputs || m_AllInputs.Count > 0)
                     return false;
             }
 
-            //check condition--> m_AllInputs.have same number of key value pairs as other.m_AllInputs 
-            if (m_AllInputs.Count != other.m_AllInputs.Count)
-                return false;
-            foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
+            //check condition--> m_AllInputs  is null and consequently  the other compared object is non null means the objects are unequal
+            if (m_AllInputs == null || m_AllInputs.Count <= 0)
             {
+                //if other.m_AllInputs  has a value this means 2 instances not equal.
+                if (other.m_AllInputs != null || other.m_AllInputs.Count > 0)
+                    return false;
+            }
+            //else if condition check --> "m_AllInputs" have same number of key value pairs as "other.m_AllInputs" 
+            else if (m_AllInputs.Count != other.m_AllInputs.Count)
+                return false;
 
-                foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
+            //check each key values in the m_AllInputs equality check if not same for any then only return false
+            else
+            {
+                foreach (KeyValuePair<TIN, List<int[]>> val in other.m_AllInputs)
                 {
-                    if (kvp.Key.Equals(val.Key))
-                    {
 
-                        for (int i = 0; i < kvp.Value.Count; i++)
+                    foreach (KeyValuePair<TIN, List<int[]>> kvp in m_AllInputs)
+                    {
+                        if (kvp.Key.Equals(val.Key))
                         {
-                            bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
-                           
-                            if (result == false)
-                                return false;
+
+                            for (int i = 0; i < kvp.Value.Count; i++)
+                            {
+                                bool result = kvp.Value[i].ElementsEqual(val.Value[i]);
+
+                                if (result == false)
+                                    return false;
+                            }
+
                         }
 
                     }
-
                 }
             }
+
+            // returns true if all parameters are found Equal
             return true;
         }
 
+
         /// <summary>
-        /// Hashcode override
+        /// HashCode override to keep the Equals HashCode contract 
+        /// Here GetHAshCode is override. 
+        /// Prime number hashing used
+        /// The hash value is calculated as aggregate of  each parameters of HTMClassifier class. 
+        /// So for the Complex type dictionary parameter(m_allInputs) we need to calculate the hash value accordingly.
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
         {
-            return HashCode.Combine(maxRecordedElements, m_AllInputs);
+            //TODO see code below the  HashCode Override implemented 
+            unchecked 
+            {
+                //prime number as hash, results in distinct hashCode for distinct object
+                //Here we choose 31 like in many implementations in our  neocortex code. As it is an Odd Prime .
+                int prime = 31;
+                int result = 1;
+
+                // Calculate hash value considering integer value "maxRecordedElements"
+                result = prime * result + maxRecordedElements;
+
+                //Debug.WriteLine(String.Format("Hash value  -->: {0}", GetHashForDictionary(m_AllInputs)));
+                /// The final hashCode value of the HTMClassifier is calculated
+                result = prime * result + ((m_AllInputs != null && m_AllInputs.Count > 0) ? GetHashForDictionary(m_AllInputs) : 0);
+
+
+                return result;
+            }
         }
 
-     
+        /// <summary>
+        /// Part of HashCode implementation
+        /// The hash value is calculated as aggregate of keys and values in the Dictionary KeyValuePair parameter
+        /// complex type dictionary parameter --> m_allInputs.
+        /// </summary>
+        public int GetHashForDictionary(Dictionary<TIN, List<int[]>> m_AllInputs)
+        {
+            int prime = 31;
+            int hash = 0;
+            foreach (var pair in m_AllInputs)
+            {
+                int miniHash = 17;
+
+                //calculate hash value for the Dictionary params key
+                miniHash = miniHash * prime + EqualityComparer<TIN>.Default.GetHashCode(pair.Key);
+
+                ///calculate hash value for the Dictionary "Values" of each keyValuePair (in our case Value it is a List<int[]>)
+                int listHashVal = GetHashCodeIntList(pair.Value);
+                // Debug.WriteLine(String.Format("Hash value of List: {0}", listHashVal));
+
+                ///Calculate aggregate hash value of keys and Values
+                miniHash = miniHash * prime + listHashVal;
+                
+                //XOR the  hashCode of keys and  hashCode of value is XOR ed and total has calculated (the dictionary parameter m_AllInputs)
+                hash ^= miniHash;
+            }
+            Debug.WriteLine(String.Format("key value pair hashCode : {0}", hash));
+            return hash;
+
+        }
+
+
+        /// <summary>
+        /// Calculate hash for all elements in the list of integer array in the m_allInputs Value
+        /// </summary>
+        public int GetHashCodeIntList(List<int[]> l)
+
+        {
+            unchecked
+            {
+                int prime = 31;
+                int hash = 19;
+                foreach (var foo in l)
+                {
+                    hash = hash * prime + GetHashIntArray(foo);
+                }
+                return hash;
+            }
+        }
+
+        /// <summary>
+        /// Calculate hash for all elements in the integer array of the parameter m_allInputs and return to the called method
+        /// </summary>
+        public int GetHashIntArray(int[] array)
+        {
+            unchecked
+            {
+                if (array == null)
+                {
+                    return 0;
+                }
+                int prime = 31;
+                int hash = 17;
+                foreach (int element in array)
+                {
+                    hash = hash * prime + EqualityComparer<int>.Default.GetHashCode(element);
+                }
+                return hash;
+            }
+        }
 
     }
 

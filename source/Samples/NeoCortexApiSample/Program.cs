@@ -42,7 +42,7 @@ namespace NeoCortexApiSample
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);         
+            //var predictor = experiment.Run(sequences);         
         }
 
 
@@ -65,7 +65,8 @@ namespace NeoCortexApiSample
             //
             // Prototype for building the prediction engine.
             MultiSequenceLearning experiment = new MultiSequenceLearning();
-            var predictor = experiment.Run(sequences);
+            Predictor serializedPredictor;
+            var predictor = experiment.Run(sequences, out serializedPredictor);
 
             //
             // These list are used to see how the prediction works.
@@ -77,6 +78,7 @@ namespace NeoCortexApiSample
 
             predictor.Reset();
             PredictNextElement(predictor, list1);
+            PredictNextElement(serializedPredictor, list1);
 
             predictor.Reset();
             PredictNextElement(predictor, list2);

@@ -1,0 +1,92 @@
+Started experiment: ML22/23-9 Implement Serialization of HtmClassifier -Team Alpha
+info: Train.Console[0]
+      11/09/2023 20:29:59 -  Started experiment: ML22/23-9 Implement Serialization of HtmClassifier -Team Alpha
+info: Train.Console[0]
+      Received the message form Azure Container Queue:
+ {
+"ExperimentId":"Experiment3",
+"InputFile":"sampleinputseq.csv",
+"TestInputFile":"TestValidation3Input.txt"
+}
+11/09/2023 20:30:02 Starting train and Learn
+
+Hello NeocortexApi! Experiment MultiSequenceLearning
+and then predict next element for HTMClassifer serialized Predictor
+
+11/09/2023 20:31:12 Learning Completed
+------------------------------
+
+-------------Sequence to test: 1, 2, 3, 4, 2, 5-----------------
+
+ item name : 1
+Sequence predicted from Normal Predictor: S1_3-4-2-5-0-1-2 , next Element: 2
+Sequence predicted from Serialized Predictor: S1_3-4-2-5-0-1-2 , next Element : 2
+
+ item name : 2
+Sequence predicted from Normal Predictor: S1_0-1-2-3-4-2-5 , next Element: 5
+Sequence predicted from Serialized Predictor: S1_0-1-2-3-4-2-5 , next Element : 5
+
+ item name : 3
+Sequence predicted from Normal Predictor: S1_-1.0-0-1-2-3-4 , next Element: 4
+Sequence predicted from Serialized Predictor: S1_-1.0-0-1-2-3-4 , next Element : 4
+
+ item name : 4
+Sequence predicted from Normal Predictor: S1_-1.0-0-1-2-3-4-2 , next Element: 2
+Sequence predicted from Serialized Predictor: S1_-1.0-0-1-2-3-4-2 , next Element : 2
+
+ item name : 2
+Sequence predicted from Normal Predictor: S1_0-1-2-3-4-2-5 , next Element: 5
+Sequence predicted from Serialized Predictor: S1_0-1-2-3-4-2-5 , next Element : 5
+
+ item name : 5
+Nothing predicted for serialized predictor  :(
+Nothing predicted for normal predictor :(
+
+For the List of [1, 2, 3, 4, 2, 5] the accuracy calculated as below:
+Normal Predictor Accuracy -->83.33
+HTMClassifier serialised Predictor SerializedPredictorAccuracy -->83.33
+------------------------------
+------------------------------
+
+-------------Sequence to test: 2, 3, 4-----------------
+
+ item name : 2
+Sequence predicted from Normal Predictor: S1_0-1-2-3-4-2-5 , next Element: 5
+Sequence predicted from Serialized Predictor: S1_0-1-2-3-4-2-5 , next Element : 5
+
+ item name : 3
+Sequence predicted from Normal Predictor: S1_-1.0-0-1-2-3-4 , next Element: 4
+Sequence predicted from Serialized Predictor: S1_-1.0-0-1-2-3-4 , next Element : 4
+
+ item name : 4
+Sequence predicted from Normal Predictor: S1_-1.0-0-1-2-3-4-2 , next Element: 2
+Sequence predicted from Serialized Predictor: S1_-1.0-0-1-2-3-4-2 , next Element : 2
+
+For the List of [2, 3, 4] the accuracy calculated as below:
+Normal Predictor Accuracy -->100
+HTMClassifier serialised Predictor SerializedPredictorAccuracy -->100
+------------------------------
+------------------------------
+
+-------------Sequence to test: 8, 1, 2-----------------
+
+ item name : 8
+Sequence predicted from Normal Predictor: S2_2-9-10-7-11-8-1 , next Element: 1
+Sequence predicted from Serialized Predictor: S2_2-9-10-7-11-8-1 , next Element : 1
+
+ item name : 1
+Sequence predicted from Normal Predictor: S1_3-4-2-5-0-1-2 , next Element: 2
+Sequence predicted from Serialized Predictor: S1_3-4-2-5-0-1-2 , next Element : 2
+
+ item name : 2
+Sequence predicted from Normal Predictor: S1_0-1-2-3-4-2-5 , next Element: 5
+Sequence predicted from Serialized Predictor: S1_0-1-2-3-4-2-5 , next Element : 5
+
+For the List of [8, 1, 2] the accuracy calculated as below:
+Normal Predictor Accuracy -->100
+HTMClassifier serialised Predictor SerializedPredictorAccuracy -->100
+------------------------------
+Azure.Storage.Blobs.Models.BlobProperties
+Uploaded to Table Storage successfully
+info: Train.Console[0]
+      Uploaded the Experiment result to Azure Table :

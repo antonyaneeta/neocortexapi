@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	
+
+	  
     <TargetFramework>netstandard2.1</TargetFramework>
     <PackageId>NeoCortexApi</PackageId>
     <Version>1.1.4</Version>
@@ -16,7 +17,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>htm, temporal memory, spatial pooler, neocortex</PackageTags>
     <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageLicenseFile>license.txt</PackageLicenseFile>
+
 	<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	<PackageIcon>NeoCortexAPI.png</PackageIcon>
 	  <IncludeSymbols>true</IncludeSymbols>
@@ -58,10 +59,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\license.txt">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+
     <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="Anomaly.cs" />
     <None Include="Classification.cs" />

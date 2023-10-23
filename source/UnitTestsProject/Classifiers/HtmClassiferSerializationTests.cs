@@ -4,9 +4,9 @@ using NeoCortexApi.Entities;
 using NeoCortexEntities.NeuroVisualizer;
 using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
+using System.Diagnostics;
 using System.IO;
-using System.Text.Json;
+
 
 namespace HtmClassifierUnitTest
 {
@@ -39,28 +39,42 @@ namespace HtmClassifierUnitTest
 
         }
 
+        /// <summary>
+        /// Test method to check serialization with help of Equals method
+        /// </summary>
         [TestMethod]
         [TestCategory("ProjectUnitTest")]
+        [TestCategory("Test-Serialization")]
         public void TestSerializationHtmClassifier()
         {
             //Given
-            //HtmClassifier Lerrning method is called in [TestInitialize] Setup() method
+            //HtmClassifier Learning method is called in [TestInitialize] Setup() method
             HtmClassifier<string, ComputeCycle> htmClassifier1;
+            
+            string testOutputFolder = $"Output-{nameof(HtmClassiferSerializationTests)}";
+            if (Directory.Exists(testOutputFolder))
+                Directory.Delete(testOutputFolder, true);
+            string path = string.Concat(testOutputFolder, @"Output\fileName");
+
+            Directory.CreateDirectory(testOutputFolder);
+
+
+           // string path = string.Concat(testOutputFolder, @"Output\fileName");
 
             //When
-            using (StreamWriter sw = new StreamWriter(fileName))
+            using (StreamWriter sw = new StreamWriter(path))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
-            using (StreamReader sr = new StreamReader(fileName))
+            using (StreamReader sr = new StreamReader(path))
             {
-                //The second instance of HTMCLassifier after Deserialisation  
+                //The second instance of HTMClassifier after Deserialization  
                 htmClassifier1 = htmClassifier.Deserialize(sr);
-                //the below is for writing to files and Do File comparison to verify serialization
-                using (StreamWriter sw = new StreamWriter($"{TestContext.TestName}FileTest.txt"))
-                {
-                    htmClassifier.Serialize(htmClassifier1, null, sw);
-                }
+                ////the below is for writing to files and Do File comparison to verify serialization
+                //using (StreamWriter sw = new StreamWriter($"{TestContext.TestName}FileTest.txt"))
+                //{
+                //    htmClassifier.Serialize(htmClassifier1, null, sw);
+                //}
             }
 
             //Then
@@ -69,13 +83,46 @@ namespace HtmClassifierUnitTest
 
         }
 
+        /// <summary>        
+        /// Here we intend to check failure of serialization deserialization with Equals()
+        /// </summary>        
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("Test-Serialization")]
+        public void TestSerializeDeserializeHtmClassifierFailure()
+        {
+            //Given
+            sequences.Add("S6", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            sequences.Add("S7", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            sequences.Add("S8", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
+            LearnHtmClassifier();
+            //Second HTMClassifier instance initialized.
+            HtmClassifier<string, ComputeCycle> htmClassifier1;
+            string E_outFolder = "Classifiers";
+
+            //When
+            using (StreamWriter sw = new StreamWriter($"{E_outFolder}\\"+fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader("deserialize-retest.txt"))
+            {
+                htmClassifier1 = htmClassifier.Deserialize(sr);
+            }
+
+            //Then
+            Assert.IsFalse(htmClassifier.Equals(htmClassifier1));
+        }
+
 
         /// <summary>
-        /// add multiple Squence and train for 60 cycles ,with SP+TM. SP is pretrained on the given input pattern set.
+        /// Test method to test the Serialization using Equals and also file comparison method.
+        /// add multiple Sequence and train for 60 cycles ,with SP+TM. SP is pretrained on the given input pattern set.
         /// </summary>
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestSerializeDeserializeHtmClassifier()
+        [TestCategory("Test-Serialization")]
+        public void TestSerializeHtmClassifierByFileComparison()
         {
             //Given
             HtmClassifier<string, ComputeCycle> htmClassifier1;
@@ -105,48 +152,219 @@ namespace HtmClassifierUnitTest
             Assert.IsTrue(htmClassifier.Equals(htmClassifier1));
 
 
-            //File comparison method to check if serialize deserialised worked.
+            //File comparison method to check if serialize deserialize worked.
             HtmSerializer htmSerializer = new HtmSerializer();
-
             var isSameFile = htmSerializer.FileCompare("deserialize-retest.txt", $"{TestContext.TestName}.txt");
-            Console.WriteLine("*************File compared and found : " + isSameFile);
+            Debug.WriteLine(String.Format("*************File compared and found :  {0}", isSameFile));
 
         }
 
-        /// <summary>        
-        /// Here we intend to check failure of serialization deserialization.
-        /// </summary>        
+        /// <summary>
+        /// Test method to test serialization by reading the saved stream of data.
+        /// An expected htmClassifier serialized value is compared with actual obtained serialized stream.
+        /// </summary>
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestSerializeDeserializeHtmClassifierFailure()
+        [TestCategory("Test-Serialization")]
+        public void TestSerializeHtmClassifierByUsingStreamComparison()
         {
-            //Given
-            sequences.Add("S6", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
-            sequences.Add("S7", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
-            sequences.Add("S8", new List<double>(new double[] { 1.0, 2.0, 3.0, 4.0, 5.0, 2.0, 3.0 }));
-            LearnHtmClassifier();
-            HtmClassifier<string, ComputeCycle> htmClassifier1;
+            // Arrange
+            HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();
+            // LearnHtmClassifier();
+            string expectedSerialized = SerializeHtmClassifier(htmClassifier);
 
-            //When
+            // Act
+            string actualSerialized;
             using (StreamWriter sw = new StreamWriter(fileName))
             {
                 htmClassifier.Serialize(htmClassifier, null, sw);
             }
-            using (StreamReader sr = new StreamReader("deserialize-retest.txt"))
+            using (StreamReader sr = new StreamReader(fileName))
             {
-                htmClassifier1 = htmClassifier.Deserialize(sr);
+                HtmClassifier<string, ComputeCycle> actual = htmClassifier.Deserialize(sr);
+                actualSerialized = SerializeHtmClassifier(actual);
+            }
+
+            // Assert
+            Assert.AreEqual(expectedSerialized, actualSerialized);
+        }
+
+
+        /// <summary>
+        /// Test method to test serialization with different inputs results in 2 different objects.
+        /// An expected htmClassifier serialized value is compared with actual obtained serialized stream for a different file for test files, with help of method private string SerializeHtmClassifier()
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("Test-Serialization")]
+        public void TestHtmClassifierSerializationFailsWhenDifferentwithStreamComparison()
+        {
+            // Arrange
+            HtmClassifier<string, ComputeCycle> expected = new HtmClassifier<string, ComputeCycle>();
+            string E_inFolder = "Classifiers/ClassifierTestsInputs";
+            string expectedSerialized = SerializeHtmClassifier(htmClassifier);
+
+            // Act
+            string actualSerialized;
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
+            {
+                HtmClassifier<string, ComputeCycle> actual = htmClassifier.Deserialize(sr);
+                actualSerialized = SerializeHtmClassifier(actual);
+            }
+
+            // Assert
+            //Both will not be same
+            Assert.AreNotEqual(expectedSerialized, actualSerialized);
+        }
+        private string SerializeHtmClassifier(HtmClassifier<string, ComputeCycle> htmClassifier)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (StreamWriter sw = new StreamWriter(ms))
+                {
+                    htmClassifier.Serialize(htmClassifier, null, sw);
+                    sw.Flush();
+                    ms.Position = 0;
+                    using (StreamReader sr = new StreamReader(ms))
+                    {
+                        return sr.ReadToEnd();
+                    }
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// This method is indented to test the Hash code generated for two equal HTMClassifier instance.
+        /// This tests the Hash code generated by the overridden GetHasCode() .
+        /// second instances is created by deserialization by using a serialized text file.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("GetHashCode-Testing")]
+        public void HashcodeSameForEqualObjectsTest()
+        {
+            //Given
+            //New instance initialised for HTMClassifier to be used in deserialization process.
+            HtmClassifier<string, ComputeCycle> htmClassifierNew;
+
+            //Serialisation begins and save to a File
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+
+            //The saved serialized File used as input to Deserialize method and creates a new instance
+            using (StreamReader sr = new StreamReader(fileName))
+            {
+                htmClassifierNew = htmClassifier.Deserialize(sr);
             }
 
             //Then
-            Assert.IsFalse(htmClassifier.Equals(htmClassifier1));
+
+            //Assert Equality , Check if 2 instances are equal with the Equals override method!
+            Assert.IsTrue(htmClassifier.Equals(htmClassifierNew));
+
+            //Compare Hash values of 2 instances are also equal
+            var hashValFirstInstance = htmClassifier.GetHashCode(); // override for GetHashCode  in classifier is called
+            Debug.WriteLine(String.Format("Hash value : {0}", hashValFirstInstance));
+
+            var hashValNewInstance = htmClassifierNew.GetHashCode();
+            Debug.WriteLine(String.Format("Hash value : {0}", hashValNewInstance));
+
+            //Assert if the two has same Hashcode
+            Assert.IsTrue(hashValFirstInstance.Equals(hashValNewInstance));
+
         }
 
+        /// <summary>
+        /// This method is indented to test if the Hash code generated for two different HTMClassifier instance will be different.
+        /// This tests the Hash code generated by the overridden GetHasCode() .
+        /// second instances is created by deserialization by using pre-saved .txl file to get a different object of Classifier.
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("GetHashCode-Testing")]
+        public void HashcodeDifferentWhenUnequalObjectsTest()
+        {
+            //Given
+            //New instance initialised for HTMClassifier to be used in deserialization process.
+            HtmClassifier<string, ComputeCycle> htmClassifierNew;
+
+            string E_inFolder = "Classifiers/ClassifierTestsInputs";
+
+
+            //Serialisation begins and save to a File
+            using (StreamWriter sw = new StreamWriter(fileName))
+            {
+                htmClassifier.Serialize(htmClassifier, null, sw);
+            }
+
+            //Test sample .txt file used to create a different instance of HtmClassifier for the test file folder /Classifiers/ClassifierTestsInputs
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
+            {
+                htmClassifierNew = htmClassifier.Deserialize(sr);
+            }
+
+            //Then
+
+            //Assert Equality , Check if 2 instances are not same but different
+            Assert.IsFalse(htmClassifier.Equals(htmClassifierNew));
+
+            //Compare Hash values of 2 instances are also equal
+            var hashValFirstInstance = htmClassifier.GetHashCode(); // override for GetHashCode  in classifier is called
+            Debug.WriteLine(String.Format("Hash value of Fist instance of HtmClassifier: {0}", hashValFirstInstance));
+
+            var hashValNewInstance = htmClassifierNew.GetHashCode();
+            Debug.WriteLine(String.Format("Hash value second instance object: {0}", hashValNewInstance));
+
+            //Assert if the two has different HashCode
+            Assert.IsFalse(hashValFirstInstance.Equals(hashValNewInstance));
+
+        }
+
+        /// <summary>
+        /// Get HashCode value of the HTMClassifier instance using the override GetHashCode().
+        /// Checking if the method returns hashCode.
+        /// </summary>  
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("GetHashCode-Testing")]
+        public void HashCodeValueTestForAnHtmClassifierObject()
+        {
+            //Given
+            HtmClassifier<string, ComputeCycle> htmClassifierInstance;
+            // read a test input file and deserialize to get an HtmClassifier instance
+            string E_inFolder = "Classifiers/ClassifierTestsInputs";
+
+            //When
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
+            {
+                htmClassifierInstance = htmClassifier.Deserialize(sr);
+            }
+
+            //Then
+            //call GetHashCode method and get hash as return
+            var hashValue = htmClassifierInstance.GetHashCode();
+
+            Debug.WriteLine(String.Format("Hash value : {0}", hashValue));
+
+        }
+
+
+
         /// <summary>        
-        /// Below we unit test for Equals overide method
+        /// Below we unit test for Equals override method
         /// </summary>        
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierEquals()
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestHtmClassifierEqualsReturnFalseWhenTwoDifferentInstances()
         {
             //Given
             HtmClassifier<string, ComputeCycle> htmClassifieractual =new HtmClassifier<string, ComputeCycle>();
@@ -155,7 +373,7 @@ namespace HtmClassifierUnitTest
 
             //When
 
-            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject.txt"))
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
             {
                 htmClassifier1 = htmClassifier.Deserialize(sr);
             }
@@ -164,12 +382,14 @@ namespace HtmClassifierUnitTest
             Assert.IsFalse(htmClassifieractual.Equals(htmClassifier1));
         }
 
+
         /// <summary>        
         /// Below we unit test for Equals method when objects are of different type
         /// </summary>        
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierEqualsTest1()
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestHtmClassifierEqualsReturnFalseWhenTwoDifferentObjectTypePassed()
         {
             //Given
             HtmSerializer htmSerializer = new HtmSerializer();
@@ -178,7 +398,7 @@ namespace HtmClassifierUnitTest
 
             //When
 
-            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject.txt"))
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
             {
                 htmClassifier1 = htmClassifier.Deserialize(sr);
             }
@@ -192,7 +412,8 @@ namespace HtmClassifierUnitTest
         /// </summary>        
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierEqualsTest2()
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestHtmClassifierEqualsReturnFalseWhenComparedObjectIsNull()
         {
             //Given
             HtmClassifier<string, ComputeCycle> htmClassifieractual = null;
@@ -201,7 +422,7 @@ namespace HtmClassifierUnitTest
 
             //When
 
-            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject.txt"))
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
             {
                 htmClassifier1 = htmClassifier.Deserialize(sr);
             }
@@ -209,12 +430,14 @@ namespace HtmClassifierUnitTest
             //Then
             Assert.IsFalse(htmClassifier1.Equals(htmClassifieractual));
         }
+
         /// <summary>        
         /// Below we unit test failure of for Equals method if test object different
         /// </summary>        
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierEqualsTest3()
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestHtmClassifierEqualsReturnFalseWhenParametersAreDifferent()
         {
             //Given
             HtmClassifier<string, ComputeCycle> htmClassifier2;
@@ -223,11 +446,12 @@ namespace HtmClassifierUnitTest
 
             //When
 
-            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject.txt"))
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
             {
                 htmClassifier1 = htmClassifier.Deserialize(sr);
             }
 
+            //using the below test file we set maxRecordedElements as a different value that the actual.
             using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject2.txt"))
             {
                 htmClassifier2 = htmClassifier.Deserialize(sr);
@@ -236,12 +460,14 @@ namespace HtmClassifierUnitTest
             //Then
             Assert.IsFalse(htmClassifier1.Equals(htmClassifier2));
         }
+
         /// <summary>        
-        /// Below we unit test failure of for Equals method if test object when one doesnot have all class parameters
+        /// Below we unit test failure of for Equals method if test object when one does not have all class parameters
         /// </summary>        
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierEqualsTest4()
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestHtmClassifierEqualsReturnFalseWhenParametersMissingValuesInside()
         {
             //Given
             HtmClassifier<string, ComputeCycle> htmClassifier3;
@@ -250,7 +476,7 @@ namespace HtmClassifierUnitTest
 
             //When
 
-            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject.txt"))
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
             {
                 htmClassifier1 = htmClassifier.Deserialize(sr);
             }
@@ -265,11 +491,12 @@ namespace HtmClassifierUnitTest
         }
 
         /// <summary>        
-        /// Below we unit test failure of for Equals method if test object when one doesnot have all class parameters
+        /// Below we unit test failure of for Equals method if test object when one doesnot have all class parameters for m_AllInputs KeyVlauePairs
         /// </summary>        
         [TestMethod]
         [TestCategory("ProjectUnitTests")]
-        public void TestHtmClassifierEqualsTest5()
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestHtmClassifierEqualsReturnFalseWhenKeyValueParametersDifferent()
         {
             //Given
             HtmClassifier<string, ComputeCycle> htmClassifier3 ;
@@ -278,7 +505,7 @@ namespace HtmClassifierUnitTest
 
             //When
 
-            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassiferObject.txt"))
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
             {
                 htmClassifier1 = htmClassifier.Deserialize(sr);
             }
@@ -291,6 +518,49 @@ namespace HtmClassifierUnitTest
             //Then
             Assert.IsFalse(htmClassifier3.Equals(htmClassifier1));
         }
+       
+        /// <summary>
+        /// The below test checks the condition when in a compared instance of Classifier class 
+        /// where the parameter m_AllInputs or other.m_AllInput is null
+        /// </summary>
+        [TestMethod]
+        [TestCategory("ProjectUnitTests")]
+        [TestCategory("Equals-Override-UnitTests")]
+        public void TestEqualsReturnFalseWhenInstancesHasNullParameters()
+        {
+            //Given
+            HtmClassifier<string, ComputeCycle> htmClassifierWithNullParameter;
+            HtmClassifier<string, ComputeCycle> htmClassifierActualObject;
+            string E_inFolder = "Classifiers/ClassifierTestsInputs";
+
+            //When
+
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\ExpectedHtmClassifierObjectInputFile.txt"))
+            {
+                htmClassifierActualObject = htmClassifier.Deserialize(sr);
+            }
+
+            //The Test file we read below does not contain m_AllInput params so the Condition in the Equals method would be tested accordingly
+            using (StreamReader sr = new StreamReader($"{E_inFolder}\\null_m_AllInput_TestValues.txt"))
+            {
+                htmClassifierWithNullParameter = htmClassifier.Deserialize(sr);
+            }
+
+            //Then
+
+            // passing the null object as compared instance to Equal method.
+
+            var isFirstEqualSecond = htmClassifierActualObject.Equals(htmClassifierWithNullParameter);
+            Assert.IsFalse(isFirstEqualSecond);
+
+            //Passsing the instance with null param as reference object in comparison
+            var isSecondEqualFirst = htmClassifierWithNullParameter.Equals(htmClassifierActualObject);
+            Assert.IsFalse(isSecondEqualFirst);
+          
+           
+        }
+
+
 
         private void LearnHtmClassifier()
         {

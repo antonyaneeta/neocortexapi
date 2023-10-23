@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Storage.Queues" Version="12.10.0" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.8.3" />
+		<PackageReference Include="Azure.Data.Tables" Version="12.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\NeoCortexApi\NeoCortexApi.csproj">
+	    <Private>True</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\NeoCortexArrayLib\NeoCortexArrayLib.csproj" />
+	  <ProjectReference Include="..\..\NeoCortexEntities\NeoCortexEntities.csproj" />
+	  <ProjectReference Include="..\..\Samples\NeoCortexApiSample\NeoCortexApiSample.csproj" />
+	  <ProjectReference Include="..\..\UnitTestsProject\UnitTestsProject.csproj" />
+	  <ProjectReference Include="..\MyCloudProject.Common\MyCloudProject.Common.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="NeoCortexApi">
+	    <HintPath>..\..\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexApi.dll</HintPath>
+	    <Private>True</Private>
+	  </Reference>
+	  <Reference Include="NeoCortexArrayLib">
+	    <HintPath>..\..\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexArrayLib.dll</HintPath>
+	    <Private>True</Private>
+	  </Reference>
+	  <Reference Include="NeoCortexEntities">
+	    <HintPath>..\..\NeoCortexApi\bin\Debug\netstandard2.1\NeoCortexEntities.dll</HintPath>
+	    <Private>True</Private>
+	  </Reference>
+	</ItemGroup>
+
+
+	<!--<ItemGroup>
+	  <Reference Include="NeoCortexEntities">
+	    <HintPath>..\..\..\..\..\..\SE-forked\neocortexapi\source\NeoCortexEntities\bin\Debug\netstandard2.1\NeoCortexEntities.dll</HintPath>
+	  </Reference>
+	</ItemGroup>-->
+
+</Project>

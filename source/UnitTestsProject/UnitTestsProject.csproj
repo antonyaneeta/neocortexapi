@@ -77,8 +77,11 @@
 		<None Update="Classifiers\ClassifierTestsInputs\ExpectedHtmClassiferObject2.txt">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Classifiers\ClassifierTestsInputs\ExpectedHtmClassiferObject.txt">
+		<None Update="Classifiers\ClassifierTestsInputs\ExpectedHtmClassifierObjectInputFile.txt">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Classifiers\ClassifierTestsInputs\null_m_AllInput_TestValues.txt">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="MnistPng28x28\testing\3\1020.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
